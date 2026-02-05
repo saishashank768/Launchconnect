@@ -1,0 +1,114 @@
+{% extends 'base.html' %}
+
+{% block title %}Welcome to LaunchConnect{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center py-12 lg:py-20">
+
+        <!-- Hero Content -->
+        <div>
+            <h1 class="text-4xl lg:text-5xl font-bold text-gray-900 leading-tight mb-6">
+                Launch your career<br>
+                <span class="text-primary-600">Connect with founders</span>
+            </h1>
+            <p class="text-lg text-gray-600 mb-8 leading-relaxed">
+                LaunchConnect is the premier community for students to find high-impact internships and for founders to
+                build their dream teams.
+            </p>
+
+            <div class="flex flex-col sm:flex-row gap-4 mb-12">
+                {% if user.is_authenticated %}
+                {% if user.role == 'student' %}
+                <a href="{% url 'job_list' %}"
+                    class="bg-primary-600 text-white px-8 py-3 rounded-full font-semibold hover:bg-primary-700 transition text-center">
+                    Browse Jobs
+                </a>
+                <a href="{% url 'student_dashboard' %}"
+                    class="border border-gray-300 text-gray-700 px-8 py-3 rounded-full font-semibold hover:bg-gray-50 transition text-center">
+                    My Dashboard
+                </a>
+                {% elif user.role == 'startup' %}
+                <a href="{% url 'startup_dashboard' %}"
+                    class="bg-primary-600 text-white px-8 py-3 rounded-full font-semibold hover:bg-primary-700 transition text-center">
+                    Manage Jobs
+                </a>
+                {% elif user.role == 'founder' %}
+                <a href="{% url 'founder_feed' %}"
+                    class="bg-primary-600 text-white px-8 py-3 rounded-full font-semibold hover:bg-primary-700 transition text-center">
+                    Go to Feed
+                </a>
+                {% else %}
+                <a href="{% url 'admin_dashboard_custom' %}"
+                    class="bg-primary-600 text-white px-8 py-3 rounded-full font-semibold hover:bg-primary-700 transition text-center">
+                    Admin Dashboard
+                </a>
+                {% endif %}
+                {% else %}
+                <a href="{% url 'register' %}"
+                    class="bg-primary-600 text-white px-8 py-3 rounded-full font-semibold hover:bg-primary-700 transition text-center">
+                    Get Started
+                </a>
+                <a href="{% url 'job_list' %}"
+                    class="border border-gray-300 text-gray-700 px-8 py-3 rounded-full font-semibold hover:bg-gray-50 transition text-center">
+                    Browse Jobs
+                </a>
+                {% endif %}
+            </div>
+
+            <!-- Stats -->
+            <div class="grid grid-cols-3 gap-6">
+                <div>
+                    <div class="text-3xl font-bold text-gray-900">500+</div>
+                    <div class="text-gray-600 text-sm mt-1">Startups</div>
+                </div>
+                <div>
+                    <div class="text-3xl font-bold text-gray-900">10k+</div>
+                    <div class="text-gray-600 text-sm mt-1">Students</div>
+                </div>
+                <div>
+                    <div class="text-3xl font-bold text-gray-900">200+</div>
+                    <div class="text-gray-600 text-sm mt-1">Matches/Week</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Hero Card (Desktop) -->
+        <div class="hidden lg:block">
+            <div class="bg-white rounded-2xl shadow-xl border border-gray-200 p-8">
+                <div class="flex items-start mb-6">
+                    <div class="bg-primary-600 rounded-full p-4 text-white mr-4">
+                        <i class="fas fa-rocket text-2xl"></i>
+                    </div>
+                    <div class="flex-1">
+                        <h3 class="font-semibold text-gray-900 text-lg">Startup Inc.</h3>
+                        <p class="text-gray-600 text-sm">Fintech • <i class="fas fa-check-circle text-primary-600"></i>
+                            Verified</p>
+                    </div>
+                    <button
+                        class="border border-primary-600 text-primary-600 px-4 py-2 rounded-full font-semibold hover:bg-primary-50 transition text-sm">
+                        Follow
+                    </button>
+                </div>
+
+                <p class="text-gray-700 mb-6 leading-relaxed">
+                    We are looking for a rockstar Full Stack Intern to join our core team. Equity + Stipend available.
+                </p>
+
+                <div class="flex flex-wrap gap-2">
+                    <span class="px-3 py-1 bg-gray-100 text-gray-700 text-sm rounded-full font-medium">
+                        <i class="fas fa-map-marker-alt text-gray-500 mr-1"></i> Remote
+                    </span>
+                    <span class="px-3 py-1 bg-gray-100 text-gray-700 text-sm rounded-full font-medium">
+                        <i class="fas fa-money-bill-wave text-gray-500 mr-1"></i> $1k/mo
+                    </span>
+                    <span class="px-3 py-1 bg-green-100 text-green-700 text-sm rounded-full font-medium">
+                        <i class="fas fa-circle text-xs mr-1"></i> Hiring
+                    </span>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

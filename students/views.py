@@ -12,11 +12,28 @@ def dashboard(request):
     profile, created = StudentProfile.objects.get_or_create(user=request.user)
     applications = Application.objects.filter(student=profile).select_related('job', 'job__startup')
     
+    # Phase 6 - Intelligence: Recommended Jobs
+    from jobs.models import Job
+    from django.db.models import Q
+    
+    recommended_jobs = Job.objects.none()
+    if profile.skills:
+        skill_list = [s.strip() for s in profile.skills.split(',') if s.strip()]
+        if skill_list:
+            query = Q()
+            for skill in skill_list:
+                query |= Q(title__icontains=skill) | Q(description__icontains=skill)
+            
+            # Filter recommended jobs (exclude already applied)
+            applied_job_ids = applications.values_list('job_id', flat=True)
+            recommended_jobs = Job.objects.filter(query, status='OPEN').exclude(id__in=applied_job_ids).distinct()[:5]
+    
     context = {
         'profile': profile,
         'applications': applications,
+        'recommended_jobs': recommended_jobs,
     }
-    return render(request, 'student_dashboard.html', context)
+    return render(request, 'students/student_dashboard.html', context)
 
 @login_required
 def profile_edit(request):

@@ -27,6 +27,17 @@ def job_list(request):
             Q(title__icontains=q) |
             Q(startup__company_name__icontains=q)
         )
+    
+    # Phase 6 - Recommended Jobs
+    recommended_jobs = Job.objects.none()
+    if request.user.is_authenticated and hasattr(request.user, 'student_profile'):
+        skills = request.user.student_profile.skills.split(',')
+        skills = [s.strip() for s in skills if s.strip()]
+        if skills:
+            pattern = Q()
+            for skill in skills:
+                pattern |= Q(description__icontains=skill) | Q(title__icontains=skill)
+            recommended_jobs = Job.objects.filter(pattern, status='OPEN').exclude(id__in=jobs).distinct()[:3]
 
     context = {
         "jobs": jobs,
@@ -34,9 +45,10 @@ def job_list(request):
         "selected_type": job_type,
         "is_internship": job_type == "internship",
         "is_job": job_type == "job",
+        "recommended_jobs": recommended_jobs,
     }
 
-    return render(request, "job_list_v2.html", context)
+    return render(request, "jobs/job_list.html", context)
 
 
 def job_detail(request, pk):
@@ -58,4 +70,4 @@ def job_detail(request, pk):
         "has_applied": has_applied,
     }
 
-    return render(request, "job_detail.html", context)
+    return render(request, "jobs/job_detail.html", context)

@@ -13,6 +13,8 @@ class Application(models.Model):
     job = models.ForeignKey(Job, on_delete=models.CASCADE, related_name='applications')
     student = models.ForeignKey(StudentProfile, on_delete=models.CASCADE, related_name='applications')
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='PENDING')
+    is_conversion = models.BooleanField(default=False, help_text="Track if this internship converted to a full-time job")
+    conversion_date = models.DateTimeField(null=True, blank=True)
     applied_at = models.DateTimeField(auto_now_add=True)
     
     class Meta:

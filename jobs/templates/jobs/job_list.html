@@ -1,0 +1,154 @@
+﻿{% extends "base.html" %}
+
+{% block title %}Jobs & Internships - LaunchConnect{% endblock %}
+
+{% block content %}
+<div class="bg-white border-b border-gray-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <h1 class="text-3xl font-bold text-gray-900">Find Your Next Opportunity</h1>
+        <p class="text-gray-600 mt-2">Discover jobs and internships at exciting startups</p>
+    </div>
+</div>
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+
+        <!-- FILTER SIDEBAR -->
+        <div class="lg:col-span-1">
+            <div class="bg-white rounded-lg border border-gray-200 p-6 sticky top-20">
+                <h3 class="font-semibold text-gray-900 mb-4">Filters</h3>
+
+                <form method="get" class="space-y-4">
+
+                    <!-- SEARCH -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Search</label>
+                        <input type="text" name="q"
+                            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-600 focus:border-transparent transition"
+                            placeholder="Job title or company..." value="{{ search_query }}">
+                    </div>
+
+                    <!-- JOB TYPE -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Type</label>
+                        <select name="type"
+                            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-600 focus:border-transparent transition">
+                            <option value="">All Types</option>
+                            <option value="internship" {% if selected_type=="internship" %}selected{% endif %}>
+                                Internship
+                            </option>
+                            <option value="job" {% if selected_type=="job" %}selected{% endif %}>
+                                Full-time Job
+                            </option>
+                        </select>
+                    </div>
+
+                    <button type="submit"
+                        class="w-full bg-primary-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-primary-700 transition">
+                        Apply Filters
+                    </button>
+
+                    <a href="{% url 'job_list' %}"
+                        class="block w-full text-center text-gray-600 hover:text-primary-600 text-sm font-medium transition">
+                        Clear All
+                    </a>
+
+                </form>
+            </div>
+
+            <!-- Recommended Jobs section -->
+            {% if recommended_jobs %}
+            <div class="bg-primary-50 rounded-lg border border-primary-200 p-6 mt-6">
+                <h3 class="font-bold text-primary-900 mb-4 flex items-center gap-2">
+                    <i class="fas fa-magic text-primary-600"></i> Recommended for You
+                </h3>
+                <div class="space-y-4">
+                    {% for job in recommended_jobs %}
+                    <div class="bg-white rounded-lg p-4 border border-primary-200 shadow-sm">
+                        <h4 class="text-sm font-bold text-gray-900">{{ job.title }}</h4>
+                        <p class="text-xs text-gray-500 mb-2">{{ job.startup.company_name }}</p>
+                        <a href="{% url 'job_detail' job.id %}"
+                            class="text-xs font-bold text-primary-600 hover:underline">
+                            View Details <i class="fas fa-arrow-right ml-1"></i>
+                        </a>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- JOB RESULTS -->
+        <div class="lg:col-span-3">
+            <div class="mb-4 flex items-center justify-between">
+                <h2 class="text-lg font-semibold text-gray-900">
+                    {{ jobs|length }} Job{{ jobs|length|pluralize }} Found
+                </h2>
+            </div>
+
+            <div class="space-y-4">
+                {% for job in jobs %}
+                <a href="{% url 'job_detail' job.id %}"
+                    class="block bg-white rounded-lg border border-gray-200 p-6 hover:shadow-lg hover:border-primary-600 transition-all duration-200">
+
+                    <div class="flex items-start justify-between mb-3">
+                        <div class="flex-1">
+                            <h3 class="text-xl font-semibold text-gray-900 hover:text-primary-600 transition">
+                                {{ job.title }}
+                            </h3>
+                            <div class="flex items-center gap-2 mt-1">
+                                <span class="font-medium text-gray-700">{{ job.startup.company_name }}</span>
+                                <span class="text-gray-400">â€¢</span>
+                                <span
+                                    class="flex items-center text-green-600 font-bold bg-green-50 px-2 py-0.5 rounded text-xs">
+                                    <i class="fas fa-certificate mr-1 text-[10px]"></i> {{ job.startup.hire_score }}
+                                    Hire Score
+                                </span>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <span
+                                class="inline-block px-3 py-1 bg-primary-50 text-primary-700 text-sm font-semibold rounded-full">
+                                {% if job.job_type == 'internship' %}Internship{% else %}Full-time{% endif %}
+                            </span>
+                        </div>
+                    </div>
+
+                    <p class="text-gray-600 mb-4 line-clamp-2">
+                        {{ job.description|truncatewords:30 }}
+                    </p>
+
+                    <div class="flex flex-wrap items-center gap-4 text-sm text-gray-600">
+                        <span class="flex items-center gap-1">
+                            <i class="fas fa-map-marker-alt text-gray-400"></i>
+                            Remote / Hybrid
+                        </span>
+                        <span class="flex items-center gap-1">
+                            <i class="fas fa-money-bill-wave text-gray-400"></i>
+                            {{ job.stipend }}
+                        </span>
+                        <span class="flex items-center gap-1">
+                            <i class="far fa-clock text-gray-400"></i>
+                            {{ job.created_at|timesince }} ago
+                        </span>
+                    </div>
+                </a>
+                {% empty %}
+                <div class="bg-white rounded-lg border border-gray-200 p-16 text-center">
+                    <div class="mb-4 text-gray-300">
+                        <i class="fas fa-search text-5xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-2">No jobs matched your filters</h3>
+                    <p class="text-gray-600 mb-6">Try adjusting your search keywords or clear all filters.</p>
+                    <a href="{% url 'job_list' %}"
+                        class="inline-block bg-primary-600 text-white px-6 py-2 rounded-lg font-semibold hover:bg-primary-700 transition">
+                        Clear All Filters
+                    </a>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

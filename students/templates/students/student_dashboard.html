@@ -1,0 +1,160 @@
+{% extends 'base.html' %}
+
+{% block title %}Student Dashboard - LaunchConnect{% endblock %}
+
+{% block content %}
+<div class="bg-white border-b border-gray-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <h1 class="text-2xl font-bold text-gray-900">Dashboard</h1>
+    </div>
+</div>
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+
+        <!-- Sidebar Profile Card -->
+        <div class="lg:col-span-1">
+            <div class="bg-white rounded-lg border border-gray-200 overflow-hidden sticky top-20">
+                <div class="p-6 text-center">
+                    <div
+                        class="w-20 h-20 bg-primary-600 rounded-full flex items-center justify-center text-white text-3xl font-bold mx-auto mb-4">
+                        {{ request.user.username|slice:":1"|upper }}
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-900">{{ request.user.username }}</h3>
+                    <p class="text-gray-600 text-sm mt-1">{{ profile.education|default:"Add Education" }}</p>
+                    <a href="{% url 'student_profile_edit' %}"
+                        class="mt-4 w-full inline-block border border-primary-600 text-primary-600 px-4 py-2 rounded-lg font-semibold hover:bg-primary-50 transition text-center">
+                        Edit Profile
+                    </a>
+                </div>
+                <div class="border-t border-gray-200 px-6 py-4 bg-gray-50">
+                    <p class="text-sm text-gray-700">
+                        <strong>Skills:</strong> {{ profile.skills|default:"None listed" }}
+                    </p>
+                </div>
+            </div>
+
+            <!-- Phase 6 - Reputation Signal -->
+            <div class="bg-white rounded-lg border border-gray-200 p-6 mt-6 shadow-sm">
+                <h4 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4">Your Intelligence</h4>
+                <div class="space-y-4">
+                    <div class="flex items-center justify-between">
+                        <span class="text-sm text-gray-600">Skill Match Score</span>
+                        <span class="text-primary-600 font-bold">85%</span>
+                    </div>
+                    <div class="w-full bg-gray-100 rounded-full h-1.5">
+                        <div class="bg-primary-600 h-1.5 rounded-full" style="width: 85%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content - Applications -->
+        <div class="lg:col-span-3">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-xl font-semibold text-gray-900">Your Applications</h2>
+                <a href="{% url 'job_list' %}" class="text-primary-600 hover:text-primary-700 font-medium text-sm">
+                    <i class="fas fa-plus mr-1"></i> Find More Jobs
+                </a>
+            </div>
+
+            <!-- Phase 6: Recommended Jobs -->
+            {% if recommended_jobs %}
+            <div class="mb-10">
+                <div class="flex items-center gap-2 mb-4">
+                    <div class="w-8 h-8 bg-indigo-100 rounded-lg flex items-center justify-center text-indigo-600">
+                        <i class="fas fa-magic text-sm"></i>
+                    </div>
+                    <h2 class="text-xl font-semibold text-gray-900">Recommended for You</h2>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {% for job in recommended_jobs %}
+                    <div
+                        class="bg-white rounded-lg border-2 border-indigo-50 p-5 hover:border-indigo-200 transition shadow-sm relative overflow-hidden group">
+                        <div
+                            class="absolute top-0 right-0 py-1 px-3 bg-indigo-600 text-white text-[10px] font-bold uppercase tracking-tighter rounded-bl-lg">
+                            Matched
+                        </div>
+                        <h4 class="font-bold text-gray-900 group-hover:text-indigo-600 transition">{{ job.title }}</h4>
+                        <div class="flex items-center gap-2 text-xs text-gray-500 mt-1 mb-4">
+                            <span>{{ job.startup.company_name }}</span>
+                            <span>•</span>
+                            <span class="flex items-center text-green-600 font-semibold">
+                                <i class="fas fa-certificate mr-1 text-[10px]"></i> {{
+                                job.startup.hire_score|default:"New" }} Hire Score
+                            </span>
+                        </div>
+                        <a href="{% url 'job_detail' job.id %}"
+                            class="text-indigo-600 text-sm font-bold hover:underline">
+                            View Opportunity <i class="fas fa-arrow-right ml-1"></i>
+                        </a>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            <div class="space-y-4">
+                {% if applications %}
+                {% for app in applications %}
+                <div class="bg-white rounded-lg border border-gray-200 p-6 hover:shadow-md transition">
+                    <div class="flex items-start justify-between">
+                        <div class="flex-1">
+                            <h3 class="text-lg font-semibold text-gray-900 mb-1">
+                                <a href="{% url 'job_detail' app.job.id %}" class="hover:text-primary-600 transition">
+                                    {{ app.job.title }}
+                                </a>
+                            </h3>
+                            <p class="text-gray-600 text-sm mb-3">
+                                {{ app.job.startup.company_name }} • Applied {{ app.applied_at|date:"M d, Y" }}
+                            </p>
+                        </div>
+                        <div>
+                            {% if app.status == 'HIRED' %}
+                            <span class="px-3 py-1 bg-green-100 text-green-700 text-sm rounded-full font-semibold">
+                                Hired
+                            </span>
+                            {% if app.is_conversion %}
+                            <div class="mt-2 text-right">
+                                <span
+                                    class="inline-flex items-center px-2 py-0.5 rounded text-xs font-bold bg-indigo-100 text-indigo-700 uppercase tracking-wider">
+                                    <i class="fas fa-rocket mr-1"></i>Converted to FT
+                                </span>
+                            </div>
+                            {% endif %}
+                            {% elif app.status == 'REJECTED' %}
+                            <span class="px-3 py-1 bg-red-100 text-red-700 text-sm rounded-full font-semibold">
+                                Rejected
+                            </span>
+                            {% elif app.status == 'SHORTLISTED' %}
+                            <span class="px-3 py-1 bg-blue-100 text-blue-700 text-sm rounded-full font-semibold">
+                                Shortlisted
+                            </span>
+                            {% else %}
+                            <span class="px-3 py-1 bg-gray-100 text-gray-700 text-sm rounded-full font-semibold">
+                                Pending
+                            </span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+                {% else %}
+                <div class="bg-white rounded-lg border border-gray-200 p-12 text-center">
+                    <div class="mb-4">
+                        <i class="fas fa-briefcase text-gray-300 text-5xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-2">No applications yet</h3>
+                    <p class="text-gray-600 mb-6">Start your job search and apply to opportunities</p>
+                    <a href="{% url 'job_list' %}"
+                        class="inline-block bg-primary-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-primary-700 transition">
+                        Browse Jobs
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

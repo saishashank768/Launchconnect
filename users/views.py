@@ -1,10 +1,16 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import login
 from django.contrib.auth.views import LoginView
+from django.contrib.auth.decorators import login_required
 from .forms import CustomUserCreationForm
 
 def home(request):
-    return render(request, 'home.html')
+    return render(request, 'users/home.html')
+
+@login_required
+def mark_notifications_read(request):
+    request.user.notifications.filter(is_read=False).update(is_read=True)
+    return redirect(request.META.get('HTTP_REFERER', '/'))
 
 def register(request):
     if request.method == 'POST':
@@ -19,20 +25,22 @@ def register(request):
             elif user.role == 'founder':
                 return redirect('founder_feed')
             else:
-                return redirect('admin:index')
+                return redirect('admin_dashboard_custom')
     else:
         form = CustomUserCreationForm()
-    return render(request, 'register.html', {'form': form})
+    return render(request, 'users/register.html', {'form': form})
 
 class CustomLoginView(LoginView):
-    template_name = 'login.html'
+    template_name = 'users/login.html'
     
     def get_success_url(self):
         user = self.request.user
         if user.role == 'student':
-            return '/students/dashboard/' # Hardcoded for now, will use reverse later
+            return '/students/dashboard/'
         elif user.role == 'startup':
             return '/startups/dashboard/'
         elif user.role == 'founder':
             return '/founder-collab/'
-        return '/admin/'
+        elif user.is_staff or user.role == 'admin':
+            return '/admin-panel/'
+        return '/'
