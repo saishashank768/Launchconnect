@@ -21,7 +21,11 @@ def register(request):
             else:
                 return redirect('admin:index')
     else:
-        form = CustomUserCreationForm()
+        initial = {}
+        role = request.GET.get('role')
+        if role in ['student', 'startup', 'founder']:
+            initial['role'] = role
+        form = CustomUserCreationForm(initial=initial)
     return render(request, 'users/register.html', {'form': form})
 
 class CustomLoginView(LoginView):
