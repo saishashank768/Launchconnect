@@ -8,12 +8,11 @@ def feed(request):
     if not request.user.is_founder():
         return redirect('login')
         
-    needs = FounderNeed.objects.filter(status='OPEN').exclude(founder=request.user).order_by('-created_at')
-    
-    context = {
-        'needs': needs
-    }
-    return render(request, 'founder_feed.html', context)
+    # Phase 4 - Trust Check
+    is_verified = False
+    if hasattr(request.user, 'startup_profile'):
+        is_verified = request.user.startup_profile.is_verified
+        
 
 @login_required
 def post_need(request):
@@ -25,8 +24,12 @@ def post_need(request):
         if form.is_valid():
             need = form.save(commit=False)
             need.founder = request.user
-            need.save()
-            return redirect('founder_feed')
+            # Check verification again for safety
+            if hasattr(request.user, 'startup_profile') and request.user.startup_profile.is_verified:
+                need.save()
+                return redirect('founder_feed')
+            else:
+                return redirect('login')
     else:
         form = FounderNeedForm()
     return render(request, 'form_generic.html', {'form': form, 'title': 'Post Collaboration Need'})
@@ -41,7 +44,46 @@ def send_request(request, need_id):
             req.need = need
             req.sender = request.user
             req.save()
+            
+            # Phase 5 - Notification
+            from users.models import Notification
+            Notification.objects.create(
+                user=need.founder,
+                title="New Collab Request",
+                message=f"{request.user.username} wants to collaborate on: {need.title}",
+                link="/founder-collab/manage-requests/"
+            )
             return redirect('founder_feed')
     else:
         form = CollabRequestForm()
     return render(request, 'form_generic.html', {'form': form, 'title': f'Contact {need.founder.username}'})
+
+@login_required
+def manage_requests(request):
+    if not request.user.is_founder():
+        return redirect('login')
+        
+    needs = FounderNeed.objects.filter(founder=request.user).prefetch_related('requests', 'requests__sender')
+    
+    if request.method == 'POST':
+        request_id = request.POST.get('request_id')
+        action = request.POST.get('action') # ACCEPT or DECLINE
+        collab_req = get_object_or_404(CollabRequest, id=request_id, need__founder=request.user)
+        
+        if action == 'ACCEPT':
+            collab_req.status = 'ACCEPTED'
+            # Notify sender
+            from users.models import Notification
+            Notification.objects.create(
+                user=collab_req.sender,
+                title="Collab Request Accepted!",
+                message=f"{request.user.username} accepted your collaboration request for {collab_req.need.title}",
+                link="/founder-collab/"
+            )
+        elif action == 'DECLINE':
+            collab_req.status = 'DECLINED'
+            
+        collab_req.save()
+        return redirect('founder_manage_requests')
+        
+    return render(request, 'founder_collab/manage_requests.html', {'needs': needs})

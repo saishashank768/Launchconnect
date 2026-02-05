@@ -22,7 +22,7 @@ def dashboard(request):
         'jobs': jobs,
         'total_applicants': total_applicants
     }
-    return render(request, 'startup_dashboard.html', context)
+    return render(request, 'startups/startup_dashboard.html', context)
 
 @login_required
 def profile_edit(request):
@@ -60,4 +60,4 @@ def job_create(request):
 def job_applicants(request, job_id):
     job = get_object_or_404(Job, id=job_id, startup__user=request.user)
     applications = job.applications.all().select_related('student', 'student__user')
-    return render(request, 'job_applicants.html', {'job': job, 'applications': applications})
+    return render(request, 'jobs/job_applicants.html', {'job': job, 'applications': applications})

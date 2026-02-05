@@ -7,7 +7,15 @@ class FounderNeed(models.Model):
         ('MATCHED', 'Matched'),
         ('CLOSED', 'Closed'),
     )
+    CATEGORY_CHOICES = (
+        ('TECH', 'Technical Support'),
+        ('HIRING', 'Hiring Advice'),
+        ('FUNDING', 'Funding/Pitching'),
+        ('PARTNER', 'Partnership'),
+        ('OTHER', 'Other'),
+    )
     founder = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='needs')
+    category = models.CharField(max_length=10, choices=CATEGORY_CHOICES, default='OTHER')
     title = models.CharField(max_length=255)
     description = models.TextField()
     week_start_date = models.DateField()

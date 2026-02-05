@@ -1,0 +1,122 @@
+{% extends 'base.html' %}
+
+{% block title %}Startup Dashboard - LaunchConnect{% endblock %}
+
+{% block content %}
+<div class="bg-white border-b border-gray-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <h1 class="text-2xl font-bold text-gray-900">Manage Jobs</h1>
+    </div>
+</div>
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+
+        <!-- Sidebar Profile Card -->
+        <div class="lg:col-span-1">
+            <div class="bg-white rounded-lg border border-gray-200 overflow-hidden mb-6 sticky top-20">
+                <div class="p-6 text-center">
+                    <div class="mb-4">
+                        <i class="fas fa-building text-primary-600 text-5xl"></i>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-900">{{ profile.company_name }}</h3>
+                    <div class="mt-2">
+                        {% if profile.is_verified %}
+                        <span
+                            class="inline-flex items-center px-3 py-1 bg-green-100 text-green-700 text-sm rounded-full font-semibold">
+                            <i class="fas fa-check-circle mr-1"></i> Verified
+                        </span>
+                        {% else %}
+                        <span
+                            class="inline-flex items-center px-3 py-1 bg-yellow-100 text-yellow-700 text-sm rounded-full font-semibold">
+                            Pending Verification
+                        </span>
+                        {% endif %}
+                    </div>
+                    <p class="text-gray-600 text-sm mt-2">{{ profile.industry }}</p>
+                    <div class="mt-4 space-y-2">
+                        <a href="{% url 'startup_profile_edit' %}"
+                            class="block w-full border border-gray-300 text-gray-700 px-4 py-2 rounded-lg font-semibold hover:bg-gray-50 transition">
+                            Edit Profile
+                        </a>
+                        {% if profile.is_verified %}
+                        <a href="{% url 'job_create' %}"
+                            class="block w-full bg-primary-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-primary-700 transition">
+                            Post a Job
+                        </a>
+                        {% else %}
+                        <button
+                            class="w-full bg-gray-300 text-gray-500 px-4 py-2 rounded-lg font-semibold cursor-not-allowed"
+                            disabled>
+                            Get Verified to Post
+                        </button>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Analytics Card -->
+            <div class="bg-white rounded-lg border border-gray-200 p-6">
+                <h3 class="font-semibold text-gray-900 mb-4">Analytics</h3>
+                <div class="space-y-3">
+                    <div class="flex justify-between items-center">
+                        <span class="text-gray-600">Active Jobs</span>
+                        <span class="text-2xl font-bold text-gray-900">{{ jobs.count }}</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-gray-600">Total Applicants</span>
+                        <span class="text-2xl font-bold text-gray-900">{{ total_applicants }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content - Job Listings -->
+        <div class="lg:col-span-3">
+            <div class="space-y-4">
+                {% for job in jobs %}
+                <div class="bg-white rounded-lg border border-gray-200 p-6 hover:shadow-md transition">
+                    <div class="flex items-start justify-between">
+                        <div class="flex-1">
+                            <h3 class="text-lg font-semibold text-gray-900 mb-2">{{ job.title }}</h3>
+                            <div class="flex flex-wrap items-center gap-2 mb-3">
+                                <span class="text-gray-600 text-sm">Posted {{ job.created_at|date:"M d, Y" }}</span>
+                                <span class="text-gray-400">•</span>
+                                <span class="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded font-medium">
+                                    {{ job.get_job_type_display }}
+                                </span>
+                                <span
+                                    class="px-2 py-1 {% if job.status == 'OPEN' %}bg-green-100 text-green-700{% else %}bg-gray-100 text-gray-700{% endif %} text-xs rounded font-medium">
+                                    {{ job.get_status_display }}
+                                </span>
+                            </div>
+                        </div>
+                        <a href="{% url 'job_applicants' job.id %}"
+                            class="border border-primary-600 text-primary-600 px-4 py-2 rounded-lg font-semibold hover:bg-primary-50 transition whitespace-nowrap">
+                            View Applicants ({{ job.applications.count }})
+                        </a>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="bg-white rounded-lg border border-gray-200 p-12 text-center">
+                    <div class="mb-4">
+                        <i class="fas fa-briefcase text-gray-300 text-5xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-2">No jobs posted yet</h3>
+                    <p class="text-gray-600 mb-6">Start by creating your first job posting</p>
+                    {% if profile.is_verified %}
+                    <a href="{% url 'job_create' %}"
+                        class="inline-block bg-primary-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-primary-700 transition">
+                        Create Your First Job
+                    </a>
+                    {% else %}
+                    <p class="text-gray-500">Please verify your account to post jobs</p>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

@@ -12,11 +12,50 @@ def dashboard(request):
     profile, created = StudentProfile.objects.get_or_create(user=request.user)
     applications = Application.objects.filter(student=profile).select_related('job', 'job__startup')
     
+    # Phase 6 - Intelligence: Recommended Jobs
+    from jobs.models import Job
+    from django.db.models import Q
+    
+    recommended_jobs = Job.objects.none()
+    if profile.skills:
+        skill_list = [s.strip() for s in profile.skills.split(',') if s.strip()]
+        if skill_list:
+            query = Q()
+            for skill in skill_list:
+                query |= Q(title__icontains=skill) | Q(description__icontains=skill)
+            
+            # Filter recommended jobs (exclude already applied)
+            applied_job_ids = applications.values_list('job_id', flat=True)
+            recommended_jobs = Job.objects.filter(query, status='OPEN').exclude(id__in=applied_job_ids).distinct()[:5]
+    # Compute a simple skill match score based on open jobs containing student's skills.
+    skill_match_score = 0
+    skill_list = []
+    if profile.skills:
+        skill_list = [s.strip().lower() for s in profile.skills.split(',') if s.strip()]
+    if skill_list:
+        # look across open jobs to see which skills appear
+        open_jobs = Job.objects.filter(status='OPEN')
+        matched_skills = set()
+        for job in open_jobs:
+            text = (job.title or '') + ' ' + (job.description or '')
+            text = text.lower()
+            for s in skill_list:
+                if s in text:
+                    matched_skills.add(s)
+        try:
+            skill_match_score = int(len(matched_skills) / len(skill_list) * 100)
+        except ZeroDivisionError:
+            skill_match_score = 0
+    else:
+        skill_match_score = 0
+    
     context = {
         'profile': profile,
         'applications': applications,
+        'recommended_jobs': recommended_jobs,
+        'skill_match_score': skill_match_score,
     }
-    return render(request, 'student_dashboard.html', context)
+    return render(request, 'students/student_dashboard.html', context)
 
 @login_required
 def profile_edit(request):

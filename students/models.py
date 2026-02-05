@@ -10,6 +10,7 @@ class StudentProfile(models.Model):
         ('full_time', 'Full Time'),
         ('part_time', 'Part Time'),
     ], default='full_time')
+    actively_looking = models.BooleanField(default=True, help_text="Whether the student is actively looking for jobs (controls resume push to companies)")
     
     def __str__(self):
         return self.user.username
