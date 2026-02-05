@@ -1,4 +1,4 @@
-﻿{% extends "base.html" %}
+{% extends "base.html" %}
 
 {% block title %}Jobs & Internships - LaunchConnect{% endblock %}
 
@@ -34,10 +34,10 @@
                         <select name="type"
                             class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-600 focus:border-transparent transition">
                             <option value="">All Types</option>
-                            <option value="internship" {% if selected_type=="internship" %}selected{% endif %}>
+                            <option value="internship" {% if selected_type == "internship" %}selected{% endif %}>
                                 Internship
                             </option>
-                            <option value="job" {% if selected_type=="job" %}selected{% endif %}>
+                            <option value="job" {% if selected_type == "job" %}selected{% endif %}>
                                 Full-time Job
                             </option>
                         </select>
@@ -98,7 +98,7 @@
                             </h3>
                             <div class="flex items-center gap-2 mt-1">
                                 <span class="font-medium text-gray-700">{{ job.startup.company_name }}</span>
-                                <span class="text-gray-400">â€¢</span>
+                                <span class="text-gray-400">•</span>
                                 <span
                                     class="flex items-center text-green-600 font-bold bg-green-50 px-2 py-0.5 rounded text-xs">
                                     <i class="fas fa-certificate mr-1 text-[10px]"></i> {{ job.startup.hire_score }}

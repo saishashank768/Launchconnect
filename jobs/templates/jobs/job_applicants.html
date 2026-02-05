@@ -1,4 +1,4 @@
-﻿{% extends 'base.html' %}
+{% extends 'base.html' %}
 
 {% block title %}Applicants for {{ job.title }} - LaunchConnect{% endblock %}
 
@@ -94,13 +94,13 @@
                                 {% csrf_token %}
                                 <select name="status"
                                     class="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-primary-600 focus:border-transparent">
-                                    <option value="PENDING" {% if app.status=='PENDING' %}selected{% endif %}>Pending
+                                    <option value="PENDING" {% if app.status == 'PENDING' %}selected{% endif %}>Pending
                                     </option>
-                                    <option value="SHORTLISTED" {% if app.status=='SHORTLISTED' %}selected{% endif %}>
+                                    <option value="SHORTLISTED" {% if app.status == 'SHORTLISTED' %}selected{% endif %}>
                                         Shortlist</option>
-                                    <option value="REJECTED" {% if app.status=='REJECTED' %}selected{% endif %}>Reject
+                                    <option value="REJECTED" {% if app.status == 'REJECTED' %}selected{% endif %}>Reject
                                     </option>
-                                    <option value="HIRED" {% if app.status=='HIRED' %}selected{% endif %}>Hire</option>
+                                    <option value="HIRED" {% if app.status == 'HIRED' %}selected{% endif %}>Hire</option>
                                 </select>
                                 <button type="submit"
                                     class="bg-primary-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-primary-700 transition text-sm">
@@ -188,11 +188,11 @@
                     {% csrf_token %}
                     <select name="status"
                         class="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-primary-600 focus:border-transparent">
-                        <option value="PENDING" {% if app.status=='PENDING' %}selected{% endif %}>Pending</option>
-                        <option value="SHORTLISTED" {% if app.status=='SHORTLISTED' %}selected{% endif %}>Shortlist
+                        <option value="PENDING" {% if app.status == 'PENDING' %}selected{% endif %}>Pending</option>
+                        <option value="SHORTLISTED" {% if app.status == 'SHORTLISTED' %}selected{% endif %}>Shortlist
                         </option>
-                        <option value="REJECTED" {% if app.status=='REJECTED' %}selected{% endif %}>Reject</option>
-                        <option value="HIRED" {% if app.status=='HIRED' %}selected{% endif %}>Hire</option>
+                        <option value="REJECTED" {% if app.status == 'REJECTED' %}selected{% endif %}>Reject</option>
+                        <option value="HIRED" {% if app.status == 'HIRED' %}selected{% endif %}>Hire</option>
                     </select>
                     <button type="submit"
                         class="bg-primary-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-primary-700 transition text-sm">
