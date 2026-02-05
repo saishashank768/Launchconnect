@@ -27,11 +27,33 @@ def dashboard(request):
             # Filter recommended jobs (exclude already applied)
             applied_job_ids = applications.values_list('job_id', flat=True)
             recommended_jobs = Job.objects.filter(query, status='OPEN').exclude(id__in=applied_job_ids).distinct()[:5]
+    # Compute a simple skill match score based on open jobs containing student's skills.
+    skill_match_score = 0
+    skill_list = []
+    if profile.skills:
+        skill_list = [s.strip().lower() for s in profile.skills.split(',') if s.strip()]
+    if skill_list:
+        # look across open jobs to see which skills appear
+        open_jobs = Job.objects.filter(status='OPEN')
+        matched_skills = set()
+        for job in open_jobs:
+            text = (job.title or '') + ' ' + (job.description or '')
+            text = text.lower()
+            for s in skill_list:
+                if s in text:
+                    matched_skills.add(s)
+        try:
+            skill_match_score = int(len(matched_skills) / len(skill_list) * 100)
+        except ZeroDivisionError:
+            skill_match_score = 0
+    else:
+        skill_match_score = 0
     
     context = {
         'profile': profile,
         'applications': applications,
         'recommended_jobs': recommended_jobs,
+        'skill_match_score': skill_match_score,
     }
     return render(request, 'students/student_dashboard.html', context)
 

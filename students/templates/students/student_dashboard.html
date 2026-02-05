@@ -38,13 +38,13 @@
             <div class="bg-white rounded-lg border border-gray-200 p-6 mt-6 shadow-sm">
                 <h4 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4">Your Intelligence</h4>
                 <div class="space-y-4">
-                    <div class="flex items-center justify-between">
-                        <span class="text-sm text-gray-600">Skill Match Score</span>
-                        <span class="text-primary-600 font-bold">85%</span>
-                    </div>
-                    <div class="w-full bg-gray-100 rounded-full h-1.5">
-                        <div class="bg-primary-600 h-1.5 rounded-full" style="width: 85%"></div>
-                    </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-600">Skill Match Score</span>
+                            <span class="text-primary-600 font-bold">{{ skill_match_score|default:0 }}%</span>
+                        </div>
+                        <div class="w-full bg-gray-100 rounded-full h-1.5">
+                            <div class="bg-primary-600 h-1.5 rounded-full" style="width: {{ skill_match_score|default:0 }}%"></div>
+                        </div>
                 </div>
             </div>
         </div>
@@ -57,6 +57,28 @@
                     <i class="fas fa-plus mr-1"></i> Find More Jobs
                 </a>
             </div>
+
+                    {% if not profile.actively_looking or not profile.resume_url %}
+                    <div class="mb-6 p-4 rounded-lg bg-yellow-50 border border-yellow-200 text-yellow-800">
+                        <div class="flex items-start justify-between gap-4">
+                            <div class="flex-1">
+                                {% if not profile.actively_looking and not profile.resume_url %}
+                                <div class="font-semibold">You're not actively looking and haven't uploaded a resume.</div>
+                                <div class="text-sm text-yellow-800">We cannot push your resume to companies while these are off or missing. Upload your resume and enable "actively looking" in your profile to start receiving matches and resume pushes.</div>
+                                {% elif not profile.actively_looking %}
+                                <div class="font-semibold">You are not actively looking for jobs.</div>
+                                <div class="text-sm text-yellow-800">We cannot push your resume to companies while this is off. Turn it on in your profile to start receiving matches and resume pushes.</div>
+                                {% elif not profile.resume_url %}
+                                <div class="font-semibold">You haven't uploaded a resume yet.</div>
+                                <div class="text-sm text-yellow-800">Upload a resume in your profile so we can push it to companies and improve match quality.</div>
+                                {% endif %}
+                            </div>
+                            <div class="ml-4">
+                                <a href="{% url 'student_profile_edit' %}" class="inline-block bg-white border border-yellow-600 text-yellow-600 px-4 py-2 rounded-lg font-semibold hover:bg-yellow-50">Edit Profile</a>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
 
             <!-- Phase 6: Recommended Jobs -->
             {% if recommended_jobs %}

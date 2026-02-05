@@ -3,112 +3,178 @@
 {% block title %}Welcome to LaunchConnect{% endblock %}
 
 {% block content %}
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center py-12 lg:py-20">
 
-        <!-- Hero Content -->
-        <div>
-            <h1 class="text-4xl lg:text-5xl font-bold text-gray-900 leading-tight mb-6">
-                Launch your career<br>
-                <span class="text-primary-600">Connect with founders</span>
-            </h1>
-            <p class="text-lg text-gray-600 mb-8 leading-relaxed">
-                LaunchConnect is the premier community for students to find high-impact internships and for founders to
-                build their dream teams.
-            </p>
+<!-- Hero -->
+<div class="bg-gradient-to-br from-white to-gray-50 py-20">
+    <div class="max-w-6xl mx-auto text-center px-4">
+        <div class="inline-block px-4 py-2 rounded-full bg-white shadow-sm mb-6 text-sm text-gray-600">🚀 Connecting Talent with Opportunity</div>
+        <h1 class="text-5xl lg:text-6xl font-extrabold text-gray-900 leading-tight mb-6">Where <span class="text-primary-600">Ambitious Students</span> Meet<br> <span class="text-primary-600">Innovative Founders</span></h1>
+        <p class="max-w-2xl mx-auto text-gray-600 text-lg mb-8">LaunchConnect bridges the gap between talented students seeking internships and verified startups looking for their next great hire. Plus, a private network for founders to collaborate.</p>
 
-            <div class="flex flex-col sm:flex-row gap-4 mb-12">
-                {% if user.is_authenticated %}
+        <div class="flex items-center justify-center gap-4 mb-10">
+            {% if user.is_authenticated %}
                 {% if user.role == 'student' %}
-                <a href="{% url 'job_list' %}"
-                    class="bg-primary-600 text-white px-8 py-3 rounded-full font-semibold hover:bg-primary-700 transition text-center">
-                    Browse Jobs
-                </a>
-                <a href="{% url 'student_dashboard' %}"
-                    class="border border-gray-300 text-gray-700 px-8 py-3 rounded-full font-semibold hover:bg-gray-50 transition text-center">
-                    My Dashboard
-                </a>
-                {% elif user.role == 'startup' %}
-                <a href="{% url 'startup_dashboard' %}"
-                    class="bg-primary-600 text-white px-8 py-3 rounded-full font-semibold hover:bg-primary-700 transition text-center">
-                    Manage Jobs
-                </a>
+                <a href="{% url 'student_dashboard' %}" class="bg-primary-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-primary-700 transition">Get Started</a>
+                <a href="{% url 'job_list' %}" class="border border-gray-300 text-gray-700 px-6 py-3 rounded-lg font-semibold hover:bg-gray-50 transition">Browse Jobs</a>
                 {% elif user.role == 'founder' %}
-                <a href="{% url 'founder_feed' %}"
-                    class="bg-primary-600 text-white px-8 py-3 rounded-full font-semibold hover:bg-primary-700 transition text-center">
-                    Go to Feed
-                </a>
+                <a href="{% url 'founder_feed' %}" class="bg-primary-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-primary-700 transition">Get Started</a>
+                <a href="{% url 'job_list' %}" class="border border-gray-300 text-gray-700 px-6 py-3 rounded-lg font-semibold hover:bg-gray-50 transition">Browse Jobs</a>
                 {% else %}
-                <a href="{% url 'admin_dashboard_custom' %}"
-                    class="bg-primary-600 text-white px-8 py-3 rounded-full font-semibold hover:bg-primary-700 transition text-center">
-                    Admin Dashboard
-                </a>
+                <a href="{% url 'register' %}" class="bg-primary-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-primary-700 transition">Get Started</a>
                 {% endif %}
-                {% else %}
-                <a href="{% url 'register' %}"
-                    class="bg-primary-600 text-white px-8 py-3 rounded-full font-semibold hover:bg-primary-700 transition text-center">
-                    Get Started
-                </a>
-                <a href="{% url 'job_list' %}"
-                    class="border border-gray-300 text-gray-700 px-8 py-3 rounded-full font-semibold hover:bg-gray-50 transition text-center">
-                    Browse Jobs
-                </a>
-                {% endif %}
-            </div>
-
-            <!-- Stats -->
-            <div class="grid grid-cols-3 gap-6">
-                <div>
-                    <div class="text-3xl font-bold text-gray-900">500+</div>
-                    <div class="text-gray-600 text-sm mt-1">Startups</div>
-                </div>
-                <div>
-                    <div class="text-3xl font-bold text-gray-900">10k+</div>
-                    <div class="text-gray-600 text-sm mt-1">Students</div>
-                </div>
-                <div>
-                    <div class="text-3xl font-bold text-gray-900">200+</div>
-                    <div class="text-gray-600 text-sm mt-1">Matches/Week</div>
-                </div>
-            </div>
+            {% else %}
+                <a href="{% url 'register' %}" class="bg-primary-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-primary-700 transition">Get Started</a>
+                <a href="{% url 'job_list' %}" class="border border-gray-300 text-gray-700 px-6 py-3 rounded-lg font-semibold hover:bg-gray-50 transition">Browse Jobs</a>
+            {% endif %}
         </div>
 
-        <!-- Hero Card (Desktop) -->
-        <div class="hidden lg:block">
-            <div class="bg-white rounded-2xl shadow-xl border border-gray-200 p-8">
-                <div class="flex items-start mb-6">
-                    <div class="bg-primary-600 rounded-full p-4 text-white mr-4">
-                        <i class="fas fa-rocket text-2xl"></i>
-                    </div>
-                    <div class="flex-1">
-                        <h3 class="font-semibold text-gray-900 text-lg">Startup Inc.</h3>
-                        <p class="text-gray-600 text-sm">Fintech • <i class="fas fa-check-circle text-primary-600"></i>
-                            Verified</p>
-                    </div>
-                    <button
-                        class="border border-primary-600 text-primary-600 px-4 py-2 rounded-full font-semibold hover:bg-primary-50 transition text-sm">
-                        Follow
-                    </button>
-                </div>
-
-                <p class="text-gray-700 mb-6 leading-relaxed">
-                    We are looking for a rockstar Full Stack Intern to join our core team. Equity + Stipend available.
-                </p>
-
-                <div class="flex flex-wrap gap-2">
-                    <span class="px-3 py-1 bg-gray-100 text-gray-700 text-sm rounded-full font-medium">
-                        <i class="fas fa-map-marker-alt text-gray-500 mr-1"></i> Remote
-                    </span>
-                    <span class="px-3 py-1 bg-gray-100 text-gray-700 text-sm rounded-full font-medium">
-                        <i class="fas fa-money-bill-wave text-gray-500 mr-1"></i> $1k/mo
-                    </span>
-                    <span class="px-3 py-1 bg-green-100 text-green-700 text-sm rounded-full font-medium">
-                        <i class="fas fa-circle text-xs mr-1"></i> Hiring
-                    </span>
-                </div>
+        <div class="grid grid-cols-4 gap-8 max-w-4xl mx-auto mt-8">
+            <div class="text-center">
+                <div class="text-3xl font-bold text-primary-600">500+</div>
+                <div class="text-gray-500 text-sm mt-1">Active Jobs</div>
+            </div>
+            <div class="text-center">
+                <div class="text-3xl font-bold text-primary-600">200+</div>
+                <div class="text-gray-500 text-sm mt-1">Verified Startups</div>
+            </div>
+            <div class="text-center">
+                <div class="text-3xl font-bold text-primary-600">5000+</div>
+                <div class="text-gray-500 text-sm mt-1">Students</div>
+            </div>
+            <div class="text-center">
+                <div class="text-3xl font-bold text-primary-600">95%</div>
+                <div class="text-gray-500 text-sm mt-1">Placement Rate</div>
             </div>
         </div>
-
     </div>
 </div>
+
+<!-- Choose Your Path -->
+<div class="max-w-6xl mx-auto px-4 py-16">
+    <h2 class="text-3xl font-semibold text-center mb-3">Choose Your Path</h2>
+    <p class="text-center text-gray-600 mb-8">Whether you're a student looking for opportunities or a founder building your dream team, we've got you covered.</p>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div class="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
+            <div class="flex items-start gap-4 mb-4">
+                <div class="w-12 h-12 bg-indigo-50 rounded-lg flex items-center justify-center text-indigo-600">
+                    <i class="fas fa-graduation-cap"></i>
+                </div>
+                <div>
+                    <h3 class="text-xl font-semibold">For Students</h3>
+                    <p class="text-gray-600">Find your perfect internship or job opportunity</p>
+                </div>
+            </div>
+            <ul class="mt-4 space-y-2 text-gray-600">
+                <li>✅ Browse verified job listings</li>
+                <li>✅ Track applications in real-time</li>
+                <li>✅ Build your professional profile</li>
+                <li>✅ Get matched with opportunities</li>
+            </ul>
+            <div class="mt-6">
+                <a href="{% url 'register' %}" class="bg-primary-600 text-white px-4 py-3 rounded-lg font-semibold">Sign Up as Student</a>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
+            <div class="flex items-start gap-4 mb-4">
+                <div class="w-12 h-12 bg-indigo-50 rounded-lg flex items-center justify-center text-indigo-600">
+                    <i class="fas fa-rocket"></i>
+                </div>
+                <div>
+                    <h3 class="text-xl font-semibold">For Founders</h3>
+                    <p class="text-gray-600">Hire talent and collaborate with fellow founders</p>
+                </div>
+            </div>
+            <ul class="mt-4 space-y-2 text-gray-600">
+                <li>✅ Post jobs and manage applicants</li>
+                <li>✅ Auto-verification via email domain</li>
+                <li>✅ Access private founder network</li>
+                <li>✅ Weekly collaboration opportunities</li>
+            </ul>
+            <div class="mt-6">
+                <a href="{% url 'register' %}" class="bg-primary-600 text-white px-4 py-3 rounded-lg font-semibold">Sign Up as Founder</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Why LaunchConnect -->
+<div class="bg-gray-50 py-12">
+    <div class="max-w-6xl mx-auto px-4">
+        <h2 class="text-3xl font-semibold text-center mb-3">Why LaunchConnect?</h2>
+        <p class="text-center text-gray-600 mb-8">Built with both students and founders in mind, our platform offers unique features that make connections meaningful.</p>
+
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+            <div class="bg-white rounded-lg border p-6 text-center">
+                <div class="w-12 h-12 bg-indigo-50 mx-auto rounded-lg flex items-center justify-center text-indigo-600 mb-4">
+                    <i class="fas fa-gift"></i>
+                </div>
+                <h4 class="font-semibold mb-2">Smart Job Matching</h4>
+                <p class="text-sm text-gray-600">AI-powered recommendations that connect students with the perfect internships and jobs based on skills and preferences.</p>
+            </div>
+            <div class="bg-white rounded-lg border p-6 text-center">
+                <div class="w-12 h-12 bg-indigo-50 mx-auto rounded-lg flex items-center justify-center text-indigo-600 mb-4">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <h4 class="font-semibold mb-2">Verified Startups</h4>
+                <p class="text-sm text-gray-600">Every company is verified through email domain authentication, ensuring you connect with legitimate opportunities.</p>
+            </div>
+            <div class="bg-white rounded-lg border p-6 text-center">
+                <div class="w-12 h-12 bg-indigo-50 mx-auto rounded-lg flex items-center justify-center text-indigo-600 mb-4">
+                    <i class="fas fa-users"></i>
+                </div>
+                <h4 class="font-semibold mb-2">Founder Network</h4>
+                <p class="text-sm text-gray-600">Exclusive collaboration space for verified founders to share needs, rate collaborations, and grow together.</p>
+            </div>
+            <div class="bg-white rounded-lg border p-6 text-center">
+                <div class="w-12 h-12 bg-indigo-50 mx-auto rounded-lg flex items-center justify-center text-indigo-600 mb-4">
+                    <i class="fas fa-bolt"></i>
+                </div>
+                <h4 class="font-semibold mb-2">Real-Time Updates</h4>
+                <p class="text-sm text-gray-600">Live job status updates, application tracking, and instant notifications keep you in the loop.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Testimonials -->
+<div class="max-w-6xl mx-auto px-4 py-16">
+    <h2 class="text-3xl font-semibold text-center mb-3">Loved by Students & Founders</h2>
+    <p class="text-center text-gray-600 mb-8">Join thousands who have transformed their careers and businesses through LaunchConnect.</p>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="bg-white rounded-lg border p-6 shadow-sm">
+            <div class="text-yellow-400 mb-3">★★★★★</div>
+            <p class="text-gray-700 mb-4">"LaunchConnect helped me land my dream internship at a YC startup. The platform made the entire process seamless."</p>
+            <div class="font-semibold">Priya Sharma</div>
+            <div class="text-sm text-gray-500">Software Engineer Intern at TechFlow AI</div>
+        </div>
+        <div class="bg-white rounded-lg border p-6 shadow-sm">
+            <div class="text-yellow-400 mb-3">★★★★★</div>
+            <p class="text-gray-700 mb-4">"As a founder, the collaboration network has been invaluable. I've found co-founders, advisors, and investors through this platform."</p>
+            <div class="font-semibold">Rahul Mehta</div>
+            <div class="text-sm text-gray-500">Co-founder & CEO at FinStack</div>
+        </div>
+        <div class="bg-white rounded-lg border p-6 shadow-sm">
+            <div class="text-yellow-400 mb-3">★★★★★</div>
+            <p class="text-gray-700 mb-4">"The quality of talent we've found here is exceptional. Hired 3 interns who are now full-time employees."</p>
+            <div class="font-semibold">Anjali Patel</div>
+            <div class="text-sm text-gray-500">Head of Talent at GreenTech Solutions</div>
+        </div>
+    </div>
+</div>
+
+<!-- CTA Banner -->
+<div class="py-16 bg-primary-600">
+    <div class="max-w-4xl mx-auto text-center text-white px-4 py-12 rounded-lg shadow-lg">
+        <h3 class="text-3xl font-semibold mb-3">Ready to Get Started?</h3>
+        <p class="text-gray-100 mb-6">Join LaunchConnect today and take the next step in your career or build your dream team.</p>
+        <div class="flex items-center justify-center gap-4">
+            <a href="{% url 'register' %}" class="bg-white text-primary-600 px-4 py-3 rounded-lg font-semibold">Create Free Account</a>
+            <a href="{% url 'job_list' %}" class="border border-white text-white px-4 py-3 rounded-lg font-semibold">Explore Opportunities</a>
+        </div>
+    </div>
+</div>
+
 {% endblock %}
