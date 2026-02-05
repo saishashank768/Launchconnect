@@ -12,7 +12,16 @@ def feed(request):
     is_verified = False
     if hasattr(request.user, 'startup_profile'):
         is_verified = request.user.startup_profile.is_verified
-        
+    
+    # Fetch all founder needs from the network
+    needs = FounderNeed.objects.all().select_related('founder').prefetch_related('requests')
+    
+    context = {
+        'needs': needs,
+        'is_verified': is_verified,
+    }
+    return render(request, 'founder_collab/founder_feed.html', context)
+
 
 @login_required
 def post_need(request):
@@ -24,12 +33,8 @@ def post_need(request):
         if form.is_valid():
             need = form.save(commit=False)
             need.founder = request.user
-            # Check verification again for safety
-            if hasattr(request.user, 'startup_profile') and request.user.startup_profile.is_verified:
-                need.save()
-                return redirect('founder_feed')
-            else:
-                return redirect('login')
+            need.save()
+            return redirect('founder_feed')
     else:
         form = FounderNeedForm()
     return render(request, 'form_generic.html', {'form': form, 'title': 'Post Collaboration Need'})
