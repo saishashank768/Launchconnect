@@ -13,7 +13,7 @@ def feed(request):
     context = {
         'needs': needs
     }
-    return render(request, 'founder_feed.html', context)
+    return render(request, 'founder_collab/founder_feed.html', context)
 
 @login_required
 def post_need(request):

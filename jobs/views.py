@@ -36,7 +36,7 @@ def job_list(request):
         "is_job": job_type == "job",
     }
 
-    return render(request, "job_list_v2.html", context)
+    return render(request, "jobs/job_list_v2.html", context)
 
 
 def job_detail(request, pk):
@@ -58,4 +58,4 @@ def job_detail(request, pk):
         "has_applied": has_applied,
     }
 
-    return render(request, "job_detail.html", context)
+    return render(request, "jobs/job_detail.html", context)

@@ -16,7 +16,7 @@ def dashboard(request):
         'profile': profile,
         'applications': applications,
     }
-    return render(request, 'student_dashboard.html', context)
+    return render(request, 'students/student_dashboard.html', context)
 
 @login_required
 def profile_edit(request):

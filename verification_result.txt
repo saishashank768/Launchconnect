@@ -1,0 +1,15 @@
+Verifying template loading...
+[OK] base.html
+[OK] error.html
+[OK] form_generic.html
+[OK] users/login.html
+[OK] users/register.html
+[OK] users/home.html
+[OK] students/student_dashboard.html
+[OK] startups/startup_dashboard.html
+[OK] jobs/job_list_v2.html
+[OK] jobs/job_detail.html
+[OK] founder_collab/founder_feed.html
+[OK] admin_panel/admin_dashboard.html
+
+All templates loaded successfully.

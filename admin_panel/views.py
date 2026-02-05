@@ -15,7 +15,7 @@ def admin_dashboard(request):
         'total_users': total_users,
         'total_jobs': total_jobs,
     }
-    return render(request, 'admin_dashboard.html', context)
+    return render(request, 'admin_panel/admin_dashboard.html', context)
 
 @staff_member_required
 def verify_startup(request, startup_id):

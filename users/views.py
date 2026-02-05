@@ -4,7 +4,7 @@ from django.contrib.auth.views import LoginView
 from .forms import CustomUserCreationForm
 
 def home(request):
-    return render(request, 'home.html')
+    return render(request, 'users/home.html')
 
 def register(request):
     if request.method == 'POST':
@@ -22,10 +22,10 @@ def register(request):
                 return redirect('admin:index')
     else:
         form = CustomUserCreationForm()
-    return render(request, 'register.html', {'form': form})
+    return render(request, 'users/register.html', {'form': form})
 
 class CustomLoginView(LoginView):
-    template_name = 'login.html'
+    template_name = 'users/login.html'
     
     def get_success_url(self):
         user = self.request.user
