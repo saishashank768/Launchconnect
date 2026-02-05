@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h4>Applicants for {{ job.title }}</h4>
+                <a href="{% url 'startup_dashboard' %}" class="text-secondary">&larr; Back to Dashboard</a>
+            </div>
+            <div>
+                <span class="badge bg-light text-dark border">{{ applications.count }} Total</span>
+            </div>
+        </div>
+
+        <div class="card shadow-sm">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="bg-light">
+                        <tr>
+                            <th scope="col" class="ps-4">Candidate</th>
+                            <th scope="col">Education</th>
+                            <th scope="col">Applied</th>
+                            <th scope="col">Resume</th>
+                            <th scope="col">Status</th>
+                            <th scope="col">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for app in applications %}
+                        <tr>
+                            <td class="ps-4">
+                                <div class="fw-bold">{{ app.student.user.username }}</div>
+                            </td>
+                            <td>{{ app.student.education }}</td>
+                            <td>{{ app.applied_at|date:"M d" }}</td>
+                            <td>
+                                {% if app.student.resume_url %}
+                                <a href="{{ app.student.resume_url }}" target="_blank"
+                                    class="btn btn-sm btn-outline-secondary">View</a>
+                                {% else %}
+                                <span class="text-muted">None</span>
+                                {% endif %}
+                            </td>
+                            <td id="status-{{ app.id }}">
+                                <span class="badge bg-secondary status-badge">{{ app.get_status_display }}</span>
+                            </td>
+                            <td>
+                                <form hx-post="{% url 'update_application_status' app.id %}"
+                                    hx-target="#status-{{ app.id }}" class="d-flex gap-2">
+                                    {% csrf_token %}
+                                    <select name="status" class="form-select form-select-sm" style="width: auto;">
+                                        <option value="PENDING" {% if app.status=='PENDING' %}selected{% endif %}>
+                                            Pending</option>
+                                        <option value="SHORTLISTED" {% if app.status=='SHORTLISTED' %}selected{% endif
+                                            %}>Shortlist</option>
+                                        <option value="REJECTED" {% if app.status=='REJECTED' %}selected{% endif %}>
+                                            Reject</option>
+                                        <option value="HIRED" {% if app.status=='HIRED' %}selected{% endif %}>Hire
+                                        </option>
+                                    </select>
+                                    <button type="submit" class="btn btn-sm btn-primary">Update</button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" class="text-center py-5">No applicants yet.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

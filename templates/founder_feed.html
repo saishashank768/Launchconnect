@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row layout-containter">
+    <div class="col-md-3">
+        <div class="card shadow-sm mb-4">
+            <div class="card-body text-center">
+                <h5>Founder Network</h5>
+                <p class="text-secondary small">Connect with other founders for weekly sprints.</p>
+                <div class="d-grid">
+                    <a href="{% url 'founder_post_need' %}" class="btn btn-primary">Post a Need</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-9">
+        <h4 class="mb-4">Collaboration Opportunities</h4>
+
+        {% for need in needs %}
+        <div class="card shadow-sm mb-3 need-card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <h5 class="card-title">{{ need.title }}</h5>
+                        <h6 class="text-secondary mb-2">{{ need.founder.username }}'s Startup</h6>
+                        <p class="card-text">{{ need.description }}</p>
+                        <small class="text-muted">
+                            <i class="far fa-calendar-alt me-1"></i> Starting {{ need.week_start_date }}
+                        </small>
+                    </div>
+                    <div>
+                        <a href="{% url 'founder_send_request' need.id %}"
+                            class="btn btn-outline-primary btn-sm">Connect</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="text-center p-5">
+            <p>No active collaboration needs found.</p>
+            <a href="{% url 'founder_post_need' %}" class="btn btn-link">Post Yours</a>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

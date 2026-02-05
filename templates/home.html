@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row align-items-center mt-5">
+    <div class="col-md-6">
+        <h1 class="display-4 fw-bold text-primary mb-4">Launch your career<br>Connect with founders</h1>
+        <p class="lead text-secondary mb-4">
+            Launchconnect is the premier community for students to find high-impact internships and for founders to
+            build their dream teams.
+        </p>
+        <div class="d-flex gap-3">
+            {% if user.is_authenticated %}
+            {% if user.role == 'student' %}
+            <a href="{% url 'job_list' %}" class="btn btn-primary btn-lg">Browse Jobs</a>
+            <a href="{% url 'student_dashboard' %}" class="btn btn-outline-secondary btn-lg">My Dashboard</a>
+            {% elif user.role == 'startup' %}
+            <a href="{% url 'startup_dashboard' %}" class="btn btn-primary btn-lg">Manage Jobs</a>
+            {% elif user.role == 'founder' %}
+            <a href="{% url 'founder_feed' %}" class="btn btn-primary btn-lg">Go to Feed</a>
+            {% else %}
+            <a href="{% url 'admin_dashboard_custom' %}" class="btn btn-primary btn-lg">Admin Dashboard</a>
+            {% endif %}
+            {% else %}
+            <a href="{% url 'register' %}" class="btn btn-primary btn-lg px-4">Get Started</a>
+            <a href="{% url 'job_list' %}" class="btn btn-outline-secondary btn-lg px-4">Browse Jobs</a>
+            {% endif %}
+        </div>
+
+        <div class="mt-5 d-flex gap-5 text-secondary">
+            <div>
+                <h3 class="fw-bold text-dark">500+</h3>
+                <small>Startups</small>
+            </div>
+            <div>
+                <h3 class="fw-bold text-dark">10k+</h3>
+                <small>Students</small>
+            </div>
+            <div>
+                <h3 class="fw-bold text-dark">200+</h3>
+                <small>Matches/Week</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 d-none d-md-block">
+        <div class="p-5 bg-white rounded-4 shadow-lg border">
+            <div class="d-flex align-items-center mb-4">
+                <div class="bg-primary rounded-circle p-3 text-white me-3">
+                    <i class="fas fa-rocket fa-2x"></i>
+                </div>
+                <div>
+                    <h5 class="mb-0">Startup Inc.</h5>
+                    <small class="text-muted">Fintech • Verified</small>
+                </div>
+                <button class="btn btn-sm btn-outline-primary ms-auto">Follow</button>
+            </div>
+            <p>We are looking for a rockstar Full Stack Intern to join our core team. Equity + Stipend available.</p>
+            <div class="mt-3">
+                <span class="badge bg-light text-dark border me-1">Remote</span>
+                <span class="badge bg-light text-dark border me-1">$1k/mo</span>
+                <span class="badge bg-success bg-opacity-10 text-success border border-success">Hiring</span>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
