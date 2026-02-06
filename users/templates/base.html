@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 
@@ -5,6 +6,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}LaunchConnect{% endblock %}</title>
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="{% static 'favicon.svg' %}">
+    <link rel="apple-touch-icon" href="{% static 'favicon.svg' %}">
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -18,7 +23,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
     <!-- Custom CSS -->
-    {% load static %}
     <link href="{% static 'style.css' %}" rel="stylesheet">
 
     <!-- HTMX -->
@@ -235,23 +239,30 @@
         </div>
     </nav>
 
-    <!-- Main Content -->
-    <main class="pt-16">
-        <!-- Messages -->
-        {% if messages %}
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4">
-            {% for message in messages %}
-            <div
-                class="bg-{{ message.tags }}-50 border border-{{ message.tags }}-200 text-{{ message.tags }}-800 px-4 py-3 rounded-lg mb-4 flex items-center justify-between">
-                <span>{{ message }}</span>
-                <button onclick="this.parentElement.remove()"
-                    class="text-{{ message.tags }}-600 hover:text-{{ message.tags }}-800">
-                    <i class="fas fa-times"></i>
-                </button>
+    <!-- Messages Toast (Fixed Position) -->
+    {% if messages %}
+    <div class="fixed top-4 right-4 space-y-2 z-50 max-w-sm">
+        {% for message in messages %}
+        <div class="bg-white border-l-4 border-{{ message.tags }}-500 bg-{{ message.tags }}-50 text-{{ message.tags }}-800 px-4 py-3 rounded-lg shadow-lg flex items-start justify-between animate-fade-in" role="alert">
+            <div class="flex items-start">
+                {% if message.tags == 'error' %}
+                <i class="fas fa-exclamation-circle text-{{ message.tags }}-600 mr-3 mt-0.5 flex-shrink-0"></i>
+                {% elif message.tags == 'success' %}
+                <i class="fas fa-check-circle text-{{ message.tags }}-600 mr-3 mt-0.5 flex-shrink-0"></i>
+                {% elif message.tags == 'warning' %}
+                <i class="fas fa-bell text-{{ message.tags }}-600 mr-3 mt-0.5 flex-shrink-0"></i>
+                {% else %}
+                <i class="fas fa-info-circle text-{{ message.tags }}-600 mr-3 mt-0.5 flex-shrink-0"></i>
+                {% endif %}
+                <span class="text-sm font-medium">{{ message }}</span>
             </div>
-            {% endfor %}
+            <button onclick="this.parentElement.style.display='none'; return false;" class="text-{{ message.tags }}-600 hover:text-{{ message.tags }}-800 ml-2 flex-shrink-0" aria-label="Close">
+                <i class="fas fa-times text-lg"></i>
+            </button>
         </div>
-        {% endif %}
+        {% endfor %}
+    </div>
+    {% endif %}
 
         <!-- Page Content -->
         {% block content %}{% endblock %}

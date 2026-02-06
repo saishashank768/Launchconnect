@@ -1,10 +1,21 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.admin.views.decorators import staff_member_required
+from django.contrib.auth.decorators import login_required
+from django.http import HttpResponseForbidden
 from startups.models import StartupProfile
 from users.models import User
 from jobs.models import Job
 
-@staff_member_required
+def admin_required(view_func):
+    """Decorator to check if user is admin"""
+    def wrapper(request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return redirect('login')
+        if not request.user.is_admin_role():
+            return HttpResponseForbidden("You don't have permission to access this page.")
+        return view_func(request, *args, **kwargs)
+    return wrapper
+
+@admin_required
 def admin_dashboard(request):
     startups_pending = StartupProfile.objects.filter(is_verified=False)
     total_users = User.objects.count()
@@ -23,7 +34,7 @@ def admin_dashboard(request):
     }
     return render(request, 'admin_panel/admin_dashboard.html', context)
 
-@staff_member_required
+@admin_required
 def verify_startup(request, startup_id):
     startup = get_object_or_404(StartupProfile, id=startup_id)
     startup.is_verified = True

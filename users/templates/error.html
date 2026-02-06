@@ -1,13 +1,17 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-md-6 text-center mt-5">
-        <div class="alert alert-danger p-5">
-            <h4 class="alert-heading">Oops!</h4>
-            <p>{{ message|default:"Something went wrong." }}</p>
-            <hr>
-            <a href="/" class="btn btn-outline-danger">Go Home</a>
+<div class="min-h-screen flex items-center justify-center px-4 py-12">
+    <div class="max-w-md w-full text-center">
+        <div class="bg-white border-l-4 border-red-500 bg-red-50 text-red-800 px-6 py-8 rounded-lg shadow-lg">
+            <div class="mb-4">
+                <i class="fas fa-exclamation-triangle text-red-600 text-5xl"></i>
+            </div>
+            <h4 class="text-2xl font-bold text-red-900 mb-2">Oops!</h4>
+            <p class="text-red-700 text-sm mb-6">{{ message|default:"Something went wrong. Please try again." }}</p>
+            <a href="/" class="inline-block bg-red-600 text-white px-6 py-2 rounded-lg font-semibold hover:bg-red-700 transition">
+                <i class="fas fa-home mr-2"></i>Go Home
+            </a>
         </div>
     </div>
 </div>

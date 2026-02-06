@@ -1,14 +1,22 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
+from django.http import HttpResponseForbidden
 from .models import StudentProfile
 from .forms import StudentProfileForm
 from applications.models import Application
 
-@login_required
+def student_required(view_func):
+    """Decorator to check if user is a student"""
+    def wrapper(request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return redirect('login')
+        if not request.user.is_student():
+            return HttpResponseForbidden("You don't have permission to access this page.")
+        return view_func(request, *args, **kwargs)
+    return wrapper
+
+@student_required
 def dashboard(request):
-    if not request.user.is_student():
-        return redirect('login')
-    
     profile, created = StudentProfile.objects.get_or_create(user=request.user)
     applications = Application.objects.filter(student=profile).select_related('job', 'job__startup')
     
@@ -57,7 +65,7 @@ def dashboard(request):
     }
     return render(request, 'students/student_dashboard.html', context)
 
-@login_required
+@student_required
 def profile_edit(request):
     profile, created = StudentProfile.objects.get_or_create(user=request.user)
     if request.method == 'POST':
