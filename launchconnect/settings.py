@@ -1,14 +1,21 @@
 import os
 from pathlib import Path
 
+# Load environment variables from .env file
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-change-me-compulsory-for-production'
+SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-change-me-compulsory-for-production')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('DEBUG', 'True').lower() == 'true'
 
 ALLOWED_HOSTS = ['*']
 
@@ -71,12 +78,12 @@ WSGI_APPLICATION = 'launchconnect.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'launchconnect',
-        'USER': 'postgres',
-        'PASSWORD': 'root',
-        'HOST': 'localhost',
-        'PORT': '5432',
+        'ENGINE': os.environ.get('DATABASE_ENGINE', 'django.db.backends.postgresql'),
+        'NAME': os.environ.get('DATABASE_NAME', 'launchconnect'),
+        'USER': os.environ.get('DATABASE_USER', 'postgres'),
+        'PASSWORD': os.environ.get('DATABASE_PASSWORD', 'root'),
+        'HOST': os.environ.get('DATABASE_HOST', 'localhost'),
+        'PORT': os.environ.get('DATABASE_PORT', '5432'),
     }
 }
 
@@ -107,7 +114,39 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Custom User Model
 AUTH_USER_MODEL = 'users.User'
 
+# Authentication
+AUTHENTICATION_BACKENDS = [
+    'users.views.EmailVerificationBackend',
+]
+
+# Email Configuration
+import os
+
+# Check environment or use default settings
+EMAIL_BACKEND = os.environ.get('EMAIL_BACKEND', 'django.core.mail.backends.console.EmailBackend')
+DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'noreply@launchconnect.com')
+SERVER_EMAIL = os.environ.get('SERVER_EMAIL', 'server@launchconnect.com')
+
+# SMTP Configuration (for development and production)
+if os.environ.get('USE_SMTP', 'false').lower() == 'true':
+    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+    EMAIL_HOST = os.environ.get('EMAIL_HOST', 'smtp.gmail.com')
+    EMAIL_PORT = int(os.environ.get('EMAIL_PORT', '587'))
+    EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS', 'true').lower() == 'true'
+    EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', '')
+    EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
+    
+    # Optional: For SendGrid
+    if 'sendgrid' in EMAIL_HOST.lower():
+        EMAIL_BACKEND = 'sendgrid_backend.SendgridBackend'
+        SENDGRID_API_KEY = os.environ.get('SENDGRID_API_KEY', '')
+
+# Email timeout
+EMAIL_TIMEOUT = 10
+
+# Public site URL used to build absolute links in emails (set in .env)
+SITE_URL = os.environ.get('SITE_URL', 'http://localhost:8000')
+
 # Login URL
 LOGIN_URL = 'login'
-LOGIN_REDIRECT_URL = 'dashboard'
 LOGOUT_REDIRECT_URL = 'login'

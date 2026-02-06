@@ -56,6 +56,7 @@
                 </a>
             </div>
 
+<<<<<<< HEAD
             <!-- Center: Branding -->
             <div class="relative z-10 max-w-lg">
                 <div class="flex items-center gap-3 mb-6">
@@ -81,6 +82,26 @@
         <!-- Right Side (Form) -->
         <div class="w-full md:w-1/2 flex items-center justify-center p-6 md:p-8 overflow-y-auto bg-gray-50">
             <div class="max-w-md w-full space-y-6 bg-white p-8 rounded-2xl shadow-lg border border-gray-100">
+                <!-- Messages Display -->
+                {% if messages %}
+                <div class="space-y-3 mb-6">
+                    {% for message in messages %}
+                    <div class="bg-white border-l-4 border-{{ message.tags }}-500 bg-{{ message.tags }}-50 text-{{ message.tags }}-800 px-4 py-3 rounded shadow-sm flex items-start">
+                        {% if message.tags == 'error' %}
+                        <i class="fas fa-exclamation-circle text-{{ message.tags }}-600 mr-3 mt-0.5 flex-shrink-0"></i>
+                        {% elif message.tags == 'success' %}
+                        <i class="fas fa-check-circle text-{{ message.tags }}-600 mr-3 mt-0.5 flex-shrink-0"></i>
+                        {% elif message.tags == 'warning' %}
+                        <i class="fas fa-bell text-{{ message.tags }}-600 mr-3 mt-0.5 flex-shrink-0"></i>
+                        {% else %}
+                        <i class="fas fa-info-circle text-{{ message.tags }}-600 mr-3 mt-0.5 flex-shrink-0"></i>
+                        {% endif %}
+                        <span class="text-sm">{{ message }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
                 <!-- Header -->
                 <div>
                     <h2 class="text-2xl font-bold text-gray-900">Create an account</h2>

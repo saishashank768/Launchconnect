@@ -12,20 +12,8 @@
         <p class="max-w-2xl mx-auto text-gray-600 text-lg mb-8">LaunchConnect bridges the gap between talented students seeking internships and verified startups looking for their next great hire. Plus, a private network for founders to collaborate.</p>
 
         <div class="flex items-center justify-center gap-4 mb-10">
-            {% if user.is_authenticated %}
-                {% if user.role == 'student' %}
-                <a href="{% url 'student_dashboard' %}" class="bg-primary-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-primary-700 transition">Get Started</a>
-                <a href="{% url 'job_list' %}" class="border border-gray-300 text-gray-700 px-6 py-3 rounded-lg font-semibold hover:bg-gray-50 transition">Browse Jobs</a>
-                {% elif user.role == 'founder' %}
-                <a href="{% url 'founder_feed' %}" class="bg-primary-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-primary-700 transition">Get Started</a>
-                <a href="{% url 'job_list' %}" class="border border-gray-300 text-gray-700 px-6 py-3 rounded-lg font-semibold hover:bg-gray-50 transition">Browse Jobs</a>
-                {% else %}
-                <a href="{% url 'register' %}" class="bg-primary-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-primary-700 transition">Get Started</a>
-                {% endif %}
-            {% else %}
-                <a href="{% url 'register' %}" class="bg-primary-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-primary-700 transition">Get Started</a>
-                <a href="{% url 'job_list' %}" class="border border-gray-300 text-gray-700 px-6 py-3 rounded-lg font-semibold hover:bg-gray-50 transition">Browse Jobs</a>
-            {% endif %}
+            <a href="{% url 'register' %}" class="bg-primary-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-primary-700 transition">Join Now</a>
+            <a href="{% url 'login' %}" class="border border-gray-300 text-gray-700 px-6 py-3 rounded-lg font-semibold hover:bg-gray-50 transition">Sign In</a>
         </div>
 
         <div class="grid grid-cols-4 gap-8 max-w-4xl mx-auto mt-8">

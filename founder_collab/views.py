@@ -1,17 +1,28 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
+from django.http import HttpResponseForbidden
 from .models import FounderNeed, CollabRequest
 from .forms import FounderNeedForm, CollabRequestForm
 
-@login_required
+def founder_required(view_func):
+    """Decorator to check if user is a founder"""
+    def wrapper(request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return redirect('login')
+        if not request.user.is_founder():
+            return HttpResponseForbidden("You don't have permission to access this page.")
+        return view_func(request, *args, **kwargs)
+    return wrapper
+
+@founder_required
 def feed(request):
-    if not request.user.is_founder():
-        return redirect('login')
-        
     # Phase 4 - Trust Check
     is_verified = False
     if hasattr(request.user, 'startup_profile'):
         is_verified = request.user.startup_profile.is_verified
+    
+    # Check email verification status
+    email_verified = request.user.is_email_verified
     
     # Fetch all founder needs from the network
     needs = FounderNeed.objects.all().select_related('founder').prefetch_related('requests')
@@ -19,14 +30,18 @@ def feed(request):
     context = {
         'needs': needs,
         'is_verified': is_verified,
+        'email_verified': email_verified,
     }
     return render(request, 'founder_collab/founder_feed.html', context)
 
 
-@login_required
+@founder_required
 def post_need(request):
-    if not request.user.is_founder():
-        return redirect('login')
+    # Check email verification for founders
+    if not request.user.is_email_verified:
+        from django.contrib import messages
+        messages.error(request, 'Please verify your email address before posting collaboration needs.')
+        return redirect('verification_pending', username=request.user.username)
         
     if request.method == 'POST':
         form = FounderNeedForm(request.POST)
@@ -39,7 +54,7 @@ def post_need(request):
         form = FounderNeedForm()
     return render(request, 'form_generic.html', {'form': form, 'title': 'Post Collaboration Need'})
 
-@login_required
+@founder_required
 def send_request(request, need_id):
     need = get_object_or_404(FounderNeed, id=need_id)
     if request.method == 'POST':
@@ -63,11 +78,9 @@ def send_request(request, need_id):
         form = CollabRequestForm()
     return render(request, 'form_generic.html', {'form': form, 'title': f'Contact {need.founder.username}'})
 
-@login_required
+@founder_required
 def manage_requests(request):
-    if not request.user.is_founder():
-        return redirect('login')
-        
+    # Only show needs belonging to the current founder
     needs = FounderNeed.objects.filter(founder=request.user).prefetch_related('requests', 'requests__sender')
     
     if request.method == 'POST':
