@@ -27,7 +27,11 @@ def register(request):
             else:
                 return redirect('admin_dashboard_custom')
     else:
-        form = CustomUserCreationForm()
+        role = request.GET.get('role')
+        initial_data = {}
+        if role:
+            initial_data['role'] = role
+        form = CustomUserCreationForm(initial=initial_data)
     return render(request, 'users/register.html', {'form': form})
 
 class CustomLoginView(LoginView):
