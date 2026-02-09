@@ -62,7 +62,29 @@ def dashboard(request):
         'applications': applications,
         'recommended_jobs': recommended_jobs,
         'skill_match_score': skill_match_score,
+        'applications_sent': applications.count(),
+        'invites_count': applications.filter(status='SHORTLISTED').count(),
+        'profile_views_count': 0,
+        'saved_jobs_count': 0,
+        'profile_completion_total': 10,
+        'profile_completion_done': sum([
+            1 if profile.resume_url else 0,
+            1 if profile.skills else 0,
+            1 if profile.preferred_roles else 0,
+            1 if profile.education else 0,
+            1 if profile.portfolio_url else 0,
+            1 if profile.weekly_hours else 0,
+            1 if profile.availability else 0,
+            1 if profile.work_mode else 0,
+            1 if profile.start_date else 0,
+            1 if profile.actively_looking else 0,
+        ]),
+        'profile_completion_pct': 0,
     }
+    try:
+        context['profile_completion_pct'] = int(context['profile_completion_done'] / context['profile_completion_total'] * 100)
+    except Exception:
+        context['profile_completion_pct'] = 0
     return render(request, 'students/student_dashboard.html', context)
 
 @student_required
@@ -75,4 +97,4 @@ def profile_edit(request):
             return redirect('student_dashboard')
     else:
         form = StudentProfileForm(instance=profile)
-    return render(request, 'form_generic.html', {'form': form, 'title': 'Edit Profile'})
+    return render(request, 'students/student_profile_edit.html', {'form': form})

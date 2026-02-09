@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+
+{% block layout %}
+{% comment %}
+Include the main header from base.html (copying it or including it if it was sharable).
+Since I can't easily include the header from base.html without refactoring base.html to have
+an include for the header, I will assume base.html's header is fine to be replaced.
+Wait, base.html has the header INSIDE the layout block. So if I override layout, I lose the header.
+I should have extracted the header in base.html.
+
+Let me look at base.html again. I wrapped the WHOLE body content in 'layout'.
+So if I override 'layout', I need to provide the header again.
+
+This is not ideal duplication.
+It's better to refactor base.html to have {% include 'includes/header.html' %}
+OR
+I can just copy the header code here for now, or use {{ block.super }} if I structure it differently.
+
+Actually, a better approach for base.html would have been to structure it with include tags,
+but I already wrapped the header in 'layout'.
+
+Let's just copy the header code for now.
+{% endcomment %}
+{% include 'includes/header.html' %}
+
+<div class="flex pt-16 min-h-screen">
+    <!-- Sidebar -->
+    {% include 'includes/student_sidebar.html' %}
+
+    <!-- Main Content -->  
+    <main class="flex-1 md:ml-64 bg-gray-50 p-8">
+        {% if messages %}
+        <div class="fixed top-20 right-4 space-y-2 z-50 max-w-sm">
+            {% for message in messages %}
+            <div class="bg-white border-l-4 border-{{ message.tags }}-500 bg-{{ message.tags }}-50 text-{{ message.tags }}-800 px-4 py-3 rounded-lg shadow-lg flex items-start justify-between animate-fade-in"
+                role="alert">
+                <div class="flex items-start">
+                    {% if message.tags == 'error' %}
+                    <i class="fas fa-exclamation-circle text-{{ message.tags }}-600 mr-3 mt-0.5 flex-shrink-0"></i>
+                    {% elif message.tags == 'success' %}
+                    <i class="fas fa-check-circle text-{{ message.tags }}-600 mr-3 mt-0.5 flex-shrink-0"></i>
+                    {% elif message.tags == 'warning' %}
+                    <i class="fas fa-bell text-{{ message.tags }}-600 mr-3 mt-0.5 flex-shrink-0"></i>
+                    {% else %}
+                    <i class="fas fa-info-circle text-{{ message.tags }}-600 mr-3 mt-0.5 flex-shrink-0"></i>
+                    {% endif %}
+                    <span class="text-sm font-medium">{{ message }}</span>
+                </div>
+                <button onclick="this.parentElement.style.display='none'; return false;"
+                    class="text-{{ message.tags }}-600 hover:text-{{ message.tags }}-800 ml-2 flex-shrink-0"
+                    aria-label="Close">
+                    <i class="fas fa-times text-lg"></i>
+                </button>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        {% block content %}{% endblock %}
+    </main>
+</div>
+
+{% endblock %}

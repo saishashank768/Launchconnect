@@ -1,68 +1,171 @@
 {% extends 'base.html' %}
+{% load widget_tweaks %}
 
 {% block title %}{{ title }} - LaunchConnect{% endblock %}
 
 {% block content %}
-<div class="bg-white border-b border-gray-200">
-    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        <h1 class="text-2xl font-bold text-gray-900">{{ title }}</h1>
+<div class="bg-gray-50 min-h-screen pb-12">
+    <div class="bg-white border-b border-gray-200">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+            <h1 class="text-2xl font-bold text-gray-900">{{ title }}</h1>
+            <p class="text-gray-500 text-sm mt-1">Update details and preferences</p>
+        </div>
     </div>
-</div>
 
-<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-    <div class="bg-white rounded-lg border border-gray-200 p-8">
-        <form method="post" class="space-y-6">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <form method="post" class="space-y-8">
             {% csrf_token %}
 
-            {% for field in form %}
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">
-                    {{ field.label }}
-                    {% if field.field.required %}
-                    <span class="text-red-500">*</span>
-                    {% endif %}
-                </label>
-
-                {% if field.field.widget.input_type == 'textarea' %}
-                <textarea name="{{ field.name }}"
-                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-600 focus:border-transparent transition"
-                    rows="5" {% if field.field.required %}required{% endif %}>{{ field.value|default:'' }}</textarea>
-                {% elif field.field.widget.input_type == 'select' %}
-                <div class="relative">
-                    {{ field }}
-                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-                        <i class="fas fa-chevron-down text-xs"></i>
-                    </div>
-                </div>
-                {% else %}
-                <input type="{{ field.field.widget.input_type }}" name="{{ field.name }}"
-                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-600 focus:border-transparent transition"
-                    {% if field.field.required %}required{% endif %} value="{{ field.value|default:'' }}">
-                {% endif %}
-
-                {% if field.help_text %}
-                <p class="text-gray-600 text-sm mt-1">{{ field.help_text }}</p>
-                {% endif %}
-
-                {% if field.errors %}
-                <p class="text-red-600 text-sm mt-1">
-                    <i class="fas fa-exclamation-circle mr-1"></i>{{ field.errors.0 }}
-                </p>
-                {% endif %}
+            {% if form.errors %}
+            <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg" role="alert">
+                <strong class="font-bold">Please correct the errors below:</strong>
+                <ul class="mt-1 list-disc list-inside text-sm">
+                    {% for field, errors in form.errors.items %}
+                        {% for error in errors %}
+                            <li>{{ field|title }}: {{ error }}</li>
+                        {% endfor %}
+                    {% endfor %}
+                </ul>
             </div>
-            {% endfor %}
+            {% endif %}
+
+            <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden p-6">
+                <div class="space-y-6">
+                    {% for field in form %}
+                    <div id="div_{{ field.name }}">
+                        {% if field.field.widget.input_type == 'checkbox' %}
+                        <label for="{{ field.auto_id }}" class="flex items-center justify-between p-4 bg-white border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
+                            <div class="flex flex-col">
+                                <span class="text-sm font-medium text-gray-900">{{ field.label }}</span>
+                                {% if field.help_text %}
+                                <span class="text-xs text-gray-500 mt-1">{{ field.help_text }}</span>
+                                {% endif %}
+                            </div>
+                            <div class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" name="{{ field.name }}" id="{{ field.auto_id }}" class="sr-only peer" {% if field.value %}checked{% endif %}>
+                                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-100 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-600"></div>
+                            </div>
+                        </label>
+                        {% else %}
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            {{ field.label }}
+                            {% if field.field.required %}
+                            <span class="text-red-500">*</span>
+                            {% endif %}
+                        </label>
+
+                        {% if field.field.widget.input_type == 'select' %}
+                        <div class="relative">
+                            {{ field|add_class:'form-select' }}
+                            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-700">
+                                <i class="fas fa-chevron-down text-xs"></i>
+                            </div>
+                        </div>
+                        {% elif field.field.widget.input_type == 'textarea' %}
+                            {{ field|add_class:'form-control' }}
+                        {% elif 'url' in field.name %}
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <i class="fas fa-link text-gray-400"></i>
+                            </div>
+                            {{ field|add_class:'form-control' }}
+                        </div>
+                        {% else %}
+                            {{ field|add_class:'form-control' }}
+                        {% endif %}
+
+                        {% if field.help_text %}
+                        <p class="text-gray-600 text-sm mt-1">{{ field.help_text }}</p>
+                        {% endif %}
+                        {% endif %}
+
+                        {% if field.errors %}
+                        <p class="text-red-600 text-sm mt-1">
+                            <i class="fas fa-exclamation-circle mr-1"></i>{{ field.errors.0 }}
+                        </p>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
 
             <div class="flex items-center justify-end gap-4 pt-6 border-t border-gray-200">
-                <a href="{% url 'student_dashboard' %}"
-                    class="text-gray-600 hover:text-gray-800 font-medium transition">
+                <a href="{% url 'student_dashboard' %}" class="px-6 py-3 rounded-lg border border-gray-300 text-gray-700 font-medium hover:bg-gray-50 transition">
                     Cancel
                 </a>
-                <button type="submit"
-                    class="bg-primary-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-primary-700 transition">
-                    <i class="fas fa-save mr-2"></i>Save Changes
+                <button type="submit" class="bg-primary-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-primary-700 transition shadow-sm flex items-center">
+                    <i class="fas fa-check mr-2"></i> Save Changes
                 </button>
             </div>
         </form>
     </div>
 </div>
+
+<style>
+    select.form-select, input.form-control, textarea.form-control {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        border-radius: 0.5rem;
+        border-color: #d1d5db;
+        transition: all 0.2s;
+        background-color: white;
+    }
+    select.form-select:focus, input.form-control:focus, textarea.form-control:focus {
+        outline: none;
+        ring: 2px;
+        ring-color: #4f46e5;
+        border-color: transparent;
+        box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+    }
+    input[name$="_url"] {
+        padding-left: 2.5rem;
+    }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const statusField = document.getElementById('id_current_status');
+    const experienceField = document.getElementById('id_experience_level');
+    
+    if (statusField && experienceField) {
+        function filterOptions() {
+            const status = statusField.value;
+            const options = experienceField.options;
+            
+            for (let i = 0; i < options.length; i++) {
+                const opt = options[i];
+                if (opt.value === '') continue;
+                
+                const isStudentOption = opt.value.startsWith('student_');
+                
+                if (status === 'student') {
+                    if (isStudentOption) {
+                        opt.hidden = false;
+                        opt.disabled = false;
+                    } else {
+                        opt.hidden = true;
+                        opt.disabled = true;
+                    }
+                } else {
+                    if (!isStudentOption) {
+                        opt.hidden = false;
+                        opt.disabled = false;
+                    } else {
+                        opt.hidden = true;
+                        opt.disabled = true;
+                    }
+                }
+            }
+            
+            const currentSelected = experienceField.selectedOptions[0];
+            if (currentSelected && (currentSelected.hidden || currentSelected.disabled)) {
+                experienceField.value = '';
+            }
+        }
+        
+        statusField.addEventListener('change', filterOptions);
+        filterOptions();
+    }
+});
+</script>
 {% endblock %}

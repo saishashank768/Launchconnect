@@ -38,6 +38,21 @@
             }
         }
     </script>
+    <style>
+        @keyframes fadeInDown {
+            0% {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .animate-fade-in-down {
+            animation: fadeInDown 0.5s ease-out;
+        }
+    </style>
 </head>
 
 <body class="bg-white font-sans antialiased">
@@ -56,7 +71,7 @@
                 </a>
             </div>
 
-<<<<<<< HEAD
+
             <!-- Center: Branding -->
             <div class="relative z-10 max-w-lg">
                 <div class="flex items-center gap-3 mb-6">
@@ -82,25 +97,37 @@
         <!-- Right Side (Form) -->
         <div class="w-full md:w-1/2 flex items-center justify-center p-6 md:p-8 overflow-y-auto bg-gray-50">
             <div class="max-w-md w-full space-y-6 bg-white p-8 rounded-2xl shadow-lg border border-gray-100">
-                <!-- Messages Display -->
-                {% if messages %}
-                <div class="space-y-3 mb-6">
-                    {% for message in messages %}
-                    <div class="bg-white border-l-4 border-{{ message.tags }}-500 bg-{{ message.tags }}-50 text-{{ message.tags }}-800 px-4 py-3 rounded shadow-sm flex items-start">
-                        {% if message.tags == 'error' %}
-                        <i class="fas fa-exclamation-circle text-{{ message.tags }}-600 mr-3 mt-0.5 flex-shrink-0"></i>
-                        {% elif message.tags == 'success' %}
-                        <i class="fas fa-check-circle text-{{ message.tags }}-600 mr-3 mt-0.5 flex-shrink-0"></i>
-                        {% elif message.tags == 'warning' %}
-                        <i class="fas fa-bell text-{{ message.tags }}-600 mr-3 mt-0.5 flex-shrink-0"></i>
-                        {% else %}
-                        <i class="fas fa-info-circle text-{{ message.tags }}-600 mr-3 mt-0.5 flex-shrink-0"></i>
-                        {% endif %}
-                        <span class="text-sm">{{ message }}</span>
+                
+                <!-- Notification Modal -->
+                <div id="notification-modal" class="fixed inset-0 z-50 flex items-center justify-center hidden" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+                    <!-- Backdrop -->
+                    <div class="fixed inset-0 bg-gray-900 bg-opacity-40 transition-opacity backdrop-blur-[2px]" aria-hidden="true" onclick="closeModal()"></div>
+                
+                    <!-- Modal Panel -->
+                    <div class="relative bg-white rounded-2xl text-center overflow-hidden shadow-2xl transform transition-all sm:max-w-sm sm:w-full m-4 scale-95 opacity-0 duration-300 border border-gray-100" id="modal-panel">
+                        <div class="px-6 py-8">
+                            <div class="flex flex-col items-center">
+                                <!-- Icon -->
+                                <div class="flex-shrink-0 flex items-center justify-center h-16 w-16 rounded-full bg-red-50 mb-5 transition-colors duration-200 ring-4 ring-white shadow-sm" id="modal-icon-bg">
+                                    <i class="fas fa-exclamation-triangle text-red-500 text-2xl" id="modal-icon"></i>
+                                </div>
+                                
+                                <!-- Content -->
+                                <h3 class="text-xl leading-6 font-bold text-gray-900 mb-2" id="modal-title">
+                                    Registration Failed
+                                </h3>
+                                <p class="text-sm text-gray-500 leading-relaxed mb-6 px-4" id="modal-message">
+                                    Please check the form for errors.
+                                </p>
+                                
+                                <!-- Button -->
+                                <button type="button" class="w-full inline-flex justify-center items-center rounded-xl border border-transparent shadow-md px-5 py-3 bg-red-600 text-base font-semibold text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-all duration-200 transform hover:scale-[1.02]" onclick="closeModal()" id="modal-button">
+                                    Try Again
+                                </button>
+                            </div>
+                        </div>
                     </div>
-                    {% endfor %}
                 </div>
-                {% endif %}
 
                 <!-- Header -->
                 <div>
@@ -114,9 +141,9 @@
                     <!-- Custom Role Selection -->
                     <div>
                         <label class="block text-sm font-semibold text-gray-900 mb-2">I am a...</label>
-                        <div class="{% if request.GET.role %}flex justify-center{% else %}grid grid-cols-2{% endif %} gap-3">
+                        <div class="{% if role_param %}flex justify-center{% else %}flex flex-wrap justify-center{% endif %} gap-3">
                             <!-- Student Card -->
-                            {% if request.GET.role != 'founder' %}
+                            {% if not role_param or role_param == 'student' %}
                             <div class="role-card cursor-pointer rounded-xl border-2 border-gray-200 p-3 hover:border-primary-600 hover:bg-primary-50 transition-all duration-200 group flex items-center justify-center gap-3 w-48"
                                  onclick="selectRole('student')" id="card-student">
                                 <div class="w-10 h-10 rounded-full bg-indigo-50 text-indigo-600 flex items-center justify-center group-hover:bg-white group-hover:shadow-sm transition-colors">
@@ -129,8 +156,22 @@
                             </div>
                             {% endif %}
 
+                            <!-- Startup Card -->
+                            {% if not role_param or role_param == 'startup' %}
+                            <div class="role-card cursor-pointer rounded-xl border-2 border-gray-200 p-3 hover:border-primary-600 hover:bg-primary-50 transition-all duration-200 group flex items-center justify-center gap-3 w-48"
+                                 onclick="selectRole('startup')" id="card-startup">
+                                <div class="w-10 h-10 rounded-full bg-indigo-50 text-indigo-600 flex items-center justify-center group-hover:bg-white group-hover:shadow-sm transition-colors">
+                                    <i class="fas fa-building text-lg"></i>
+                                </div>
+                                <div class="text-left">
+                                    <span class="block font-semibold text-gray-900 text-sm">Startup</span>
+                                    <span class="block text-xs text-gray-500">Hiring talent</span>
+                                </div>
+                            </div>
+                            {% endif %}
+
                             <!-- Founder Card -->
-                            {% if request.GET.role != 'student' %}
+                            {% if not role_param or role_param == 'founder' %}
                             <div class="role-card cursor-pointer rounded-xl border-2 border-gray-200 p-3 hover:border-primary-600 hover:bg-primary-50 transition-all duration-200 group flex items-center justify-center gap-3 w-48"
                                  onclick="selectRole('founder')" id="card-founder">
                                 <div class="w-10 h-10 rounded-full bg-indigo-50 text-indigo-600 flex items-center justify-center group-hover:bg-white group-hover:shadow-sm transition-colors">
@@ -138,7 +179,7 @@
                                 </div>
                                 <div class="text-left">
                                     <span class="block font-semibold text-gray-900 text-sm">Founder</span>
-                                    <span class="block text-xs text-gray-500">Hiring talent</span>
+                                    <span class="block text-xs text-gray-500">Networking</span>
                                 </div>
                             </div>
                             {% endif %}
@@ -160,14 +201,14 @@
                                 <div class="relative">
                                     <input type="{{ field.field.widget.input_type }}" 
                                            name="{{ field.name }}"
-                                           class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-600 focus:border-transparent transition placeholder-gray-400"
+                                           class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-600 focus:border-transparent transition placeholder-gray-400 {% if field.field.widget.input_type == 'password' %}pr-10{% endif %}"
                                            {% if field.field.required %}required{% endif %} 
                                            value="{{ field.value|default:'' }}"
                                            placeholder="{% if field.name == 'username' %}John Doe{% elif field.name == 'email' %}you@example.com{% endif %}">
                                     
-                                    {% if field.name == 'password' or field.name == 'password_confirmation' %}
+                                    {% if field.field.widget.input_type == 'password' %}
                                     <div class="absolute inset-y-0 right-0 flex items-center pr-3 cursor-pointer text-gray-400 hover:text-gray-600" onclick="togglePassword(this)">
-                                        <i class="far fa-eye text-xs"></i>
+                                        <i class="far fa-eye text-sm"></i>
                                     </div>
                                     {% endif %}
                                 </div>
@@ -236,6 +277,19 @@
                 // Default to student if nothing selected
                 selectRole('student');
             }
+            
+            // Auto-dismiss initial messages
+            {% if messages %}
+            {% for message in messages %}
+                showModal('{{ message.tags|title }}', '{{ message }}', '{{ message.tags }}');
+            {% endfor %}
+            {% endif %}
+
+            // Prevent 'Confirm Form Resubmission' and 'Unsaved Changes' warnings
+            if (window.history.replaceState) {
+                window.history.replaceState(null, null, window.location.href);
+            }
+            window.onbeforeunload = null;
         });
 
         function togglePassword(icon) {
@@ -250,6 +304,137 @@
                 i.classList.remove('fa-eye-slash');
                 i.classList.add('fa-eye');
             }
+        }
+        
+        // Handle form submission via AJAX
+        document.getElementById('registerForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const form = this;
+            const formData = new FormData(form);
+            const submitBtn = form.querySelector('button[type="submit"]');
+            const originalBtnText = submitBtn.innerHTML;
+            
+            // Disable button and show loading state
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Creating Account...';
+            
+            // Clear previous errors
+            document.querySelectorAll('.text-red-600').forEach(el => el.remove());
+            
+            fetch(form.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    window.location.href = data.redirect_url;
+                } else {
+                    // Reset button
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalBtnText;
+                    
+                    // Show errors
+                    if (data.errors) {
+                        Object.keys(data.errors).forEach(key => {
+                            const errorMsg = data.errors[key][0];
+                            
+                            if (key === '__all__') {
+                                showModal('Registration Failed', errorMsg, 'error');
+                            } else {
+                                const input = form.querySelector(`[name="${key}"]`);
+                                if (input) {
+                                    const errorDiv = document.createElement('div');
+                                    errorDiv.className = 'mt-1 space-y-1';
+                                    errorDiv.innerHTML = `
+                                        <p class="text-red-600 text-xs flex items-center">
+                                            <i class="fas fa-exclamation-triangle mr-1"></i>
+                                            ${errorMsg}
+                                        </p>
+                                    `;
+                                    input.parentElement.parentElement.appendChild(errorDiv);
+                                }
+                            }
+                        });
+                        
+                        // Also show a general modal for better visibility
+                        showModal('Registration Failed', 'Please check the form for errors.', 'error');
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalBtnText;
+                showModal('Error', 'An unexpected error occurred. Please try again.', 'error');
+            });
+        });
+        
+        function showModal(title, message, type = 'info') {
+            const modal = document.getElementById('notification-modal');
+            const panel = document.getElementById('modal-panel');
+            const iconBg = document.getElementById('modal-icon-bg');
+            const icon = document.getElementById('modal-icon');
+            const titleEl = document.getElementById('modal-title');
+            const messageEl = document.getElementById('modal-message');
+            const button = document.getElementById('modal-button');
+            
+            // Set Content
+            titleEl.textContent = title;
+            messageEl.textContent = message;
+            
+            // Base Classes
+            const iconBgBase = 'flex-shrink-0 flex items-center justify-center h-16 w-16 rounded-full mb-5 transition-colors duration-200 ring-4 ring-white shadow-sm';
+            const iconBase = 'text-2xl';
+            const buttonBase = 'w-full inline-flex justify-center items-center rounded-xl border border-transparent shadow-md px-5 py-3 text-base font-semibold text-white focus:outline-none focus:ring-2 focus:ring-offset-2 transition-all duration-200 transform hover:scale-[1.02]';
+            
+            // Set Styles based on type
+            if (type === 'error') {
+                iconBg.className = `${iconBgBase} bg-red-50`;
+                icon.className = `fas fa-exclamation-triangle ${iconBase} text-red-500`;
+                button.className = `${buttonBase} bg-red-600 hover:bg-red-700 focus:ring-red-500`;
+                button.textContent = 'Try Again';
+            } else if (type === 'success') {
+                iconBg.className = `${iconBgBase} bg-green-50`;
+                icon.className = `fas fa-check ${iconBase} text-green-500`;
+                button.className = `${buttonBase} bg-green-600 hover:bg-green-700 focus:ring-green-500`;
+                button.textContent = 'Continue';
+            } else {
+                iconBg.className = `${iconBgBase} bg-blue-50`;
+                icon.className = `fas fa-info ${iconBase} text-blue-500`;
+                button.className = `${buttonBase} bg-blue-600 hover:bg-blue-700 focus:ring-blue-500`;
+                button.textContent = 'OK';
+            }
+            
+            // Show Modal
+            modal.classList.remove('hidden');
+            // Trigger reflow
+            void modal.offsetWidth;
+            
+            // Animate in
+            modal.classList.remove('opacity-0');
+            panel.classList.remove('scale-95', 'opacity-0');
+            panel.classList.add('scale-100', 'opacity-100');
+        }
+        
+        function closeModal() {
+            const modal = document.getElementById('notification-modal');
+            const panel = document.getElementById('modal-panel');
+            
+            // Animate out
+            modal.classList.add('opacity-0');
+            panel.classList.remove('scale-100', 'opacity-100');
+            panel.classList.add('scale-95', 'opacity-0');
+            
+            // Hide after animation
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 300);
         }
     </script>
 </body>

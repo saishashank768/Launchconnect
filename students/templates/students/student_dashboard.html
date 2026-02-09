@@ -1,182 +1,462 @@
-{% extends 'base.html' %}
+{% extends 'students/base_student.html' %}
+{% load student_extras %}
 
-{% block title %}Student Dashboard - LaunchConnect{% endblock %}
+{% block title %}Dashboard - LaunchConnect{% endblock %}
 
 {% block content %}
-<div class="bg-white border-b border-gray-200">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        <h1 class="text-2xl font-bold text-gray-900">Dashboard</h1>
-    </div>
-</div>
-
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-    <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
-
-        <!-- Sidebar Profile Card -->
-        <div class="lg:col-span-1">
-            <div class="bg-white rounded-lg border border-gray-200 overflow-hidden sticky top-20">
-                <div class="p-6 text-center">
-                    <div
-                        class="w-20 h-20 bg-primary-600 rounded-full flex items-center justify-center text-white text-3xl font-bold mx-auto mb-4">
-                        {{ request.user.username|slice:":1"|upper }}
-                    </div>
-                    <h3 class="text-lg font-semibold text-gray-900">{{ request.user.username }}</h3>
-                    <p class="text-gray-600 text-sm mt-1">{{ profile.education|default:"Add Education" }}</p>
-                    <a href="{% url 'student_profile_edit' %}"
-                        class="mt-4 w-full inline-block border border-primary-600 text-primary-600 px-4 py-2 rounded-lg font-semibold hover:bg-primary-50 transition text-center">
-                        Edit Profile
-                    </a>
-                </div>
-                <div class="border-t border-gray-200 px-6 py-4 bg-gray-50">
-                    <p class="text-sm text-gray-700">
-                        <strong>Skills:</strong> {{ profile.skills|default:"None listed" }}
-                    </p>
-                </div>
-            </div>
-
-            <!-- Phase 6 - Reputation Signal -->
-            <div class="bg-white rounded-lg border border-gray-200 p-6 mt-6 shadow-sm">
-                <h4 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4">Your Intelligence</h4>
-                <div class="space-y-4">
-                        <div class="flex items-center justify-between">
-                            <span class="text-sm text-gray-600">Skill Match Score</span>
-                            <span class="text-primary-600 font-bold">{{ skill_match_score|default:0 }}%</span>
-                        </div>
-                        <div class="w-full bg-gray-100 rounded-full h-1.5">
-                            <div class="bg-primary-600 h-1.5 rounded-full" style="width: {{ skill_match_score|default:0 }}%"></div>
-                        </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Main Content - Applications -->
-        <div class="lg:col-span-3">
-            <div class="flex items-center justify-between mb-6">
-                <h2 class="text-xl font-semibold text-gray-900">Your Applications</h2>
-                <a href="{% url 'job_list' %}" class="text-primary-600 hover:text-primary-700 font-medium text-sm">
-                    <i class="fas fa-plus mr-1"></i> Find More Jobs
-                </a>
-            </div>
-
-                    {% if not profile.actively_looking or not profile.resume_url %}
-                    <div class="mb-6 p-4 rounded-lg bg-yellow-50 border border-yellow-200 text-yellow-800">
-                        <div class="flex items-start justify-between gap-4">
-                            <div class="flex-1">
-                                {% if not profile.actively_looking and not profile.resume_url %}
-                                <div class="font-semibold">You're not actively looking and haven't uploaded a resume.</div>
-                                <div class="text-sm text-yellow-800">We cannot push your resume to companies while these are off or missing. Upload your resume and enable "actively looking" in your profile to start receiving matches and resume pushes.</div>
-                                {% elif not profile.actively_looking %}
-                                <div class="font-semibold">You are not actively looking for jobs.</div>
-                                <div class="text-sm text-yellow-800">We cannot push your resume to companies while this is off. Turn it on in your profile to start receiving matches and resume pushes.</div>
-                                {% elif not profile.resume_url %}
-                                <div class="font-semibold">You haven't uploaded a resume yet.</div>
-                                <div class="text-sm text-yellow-800">Upload a resume in your profile so we can push it to companies and improve match quality.</div>
-                                {% endif %}
-                            </div>
-                            <div class="ml-4">
-                                <a href="{% url 'student_profile_edit' %}" class="inline-block bg-white border border-yellow-600 text-yellow-600 px-4 py-2 rounded-lg font-semibold hover:bg-yellow-50">Edit Profile</a>
-                            </div>
-                        </div>
-                    </div>
-                    {% endif %}
-
-            <!-- Phase 6: Recommended Jobs -->
-            {% if recommended_jobs %}
-            <div class="mb-10">
-                <div class="flex items-center gap-2 mb-4">
-                    <div class="w-8 h-8 bg-indigo-100 rounded-lg flex items-center justify-center text-indigo-600">
-                        <i class="fas fa-magic text-sm"></i>
-                    </div>
-                    <h2 class="text-xl font-semibold text-gray-900">Recommended for You</h2>
-                </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {% for job in recommended_jobs %}
-                    <div
-                        class="bg-white rounded-lg border-2 border-indigo-50 p-5 hover:border-indigo-200 transition shadow-sm relative overflow-hidden group">
+<div class="bg-gray-50 min-h-screen pb-12">
+    <!-- Header Section -->
+    <div class="bg-white border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+                <div class="flex items-center gap-6">
+                    <div class="relative">
                         <div
-                            class="absolute top-0 right-0 py-1 px-3 bg-indigo-600 text-white text-[10px] font-bold uppercase tracking-tighter rounded-bl-lg">
-                            Matched
+                            class="w-24 h-24 bg-gradient-to-br from-primary-500 to-primary-700 rounded-2xl flex items-center justify-center text-white text-3xl font-bold shadow-lg transform rotate-3">
+                            {{ request.user.username|slice:":1"|upper }}
                         </div>
-                        <h4 class="font-bold text-gray-900 group-hover:text-indigo-600 transition">{{ job.title }}</h4>
-                        <div class="flex items-center gap-2 text-xs text-gray-500 mt-1 mb-4">
-                            <span>{{ job.startup.company_name }}</span>
-                            <span>•</span>
-                            <span class="flex items-center text-green-600 font-semibold">
-                                <i class="fas fa-certificate mr-1 text-[10px]"></i> {{
-                                job.startup.hire_score|default:"New" }} Hire Score
-                            </span>
-                        </div>
-                        <a href="{% url 'job_detail' job.id %}"
-                            class="text-indigo-600 text-sm font-bold hover:underline">
-                            View Opportunity <i class="fas fa-arrow-right ml-1"></i>
-                        </a>
-                    </div>
-                    {% endfor %}
-                </div>
-            </div>
-            {% endif %}
-
-            <div class="space-y-4">
-                {% if applications %}
-                {% for app in applications %}
-                <div class="bg-white rounded-lg border border-gray-200 p-6 hover:shadow-md transition">
-                    <div class="flex items-start justify-between">
-                        <div class="flex-1">
-                            <h3 class="text-lg font-semibold text-gray-900 mb-1">
-                                <a href="{% url 'job_detail' app.job.id %}" class="hover:text-primary-600 transition">
-                                    {{ app.job.title }}
-                                </a>
-                            </h3>
-                            <p class="text-gray-600 text-sm mb-3">
-                                {{ app.job.startup.company_name }} • Applied {{ app.applied_at|date:"M d, Y" }}
-                            </p>
-                        </div>
-                        <div>
-                            {% if app.status == 'HIRED' %}
-                            <span class="px-3 py-1 bg-green-100 text-green-700 text-sm rounded-full font-semibold">
-                                Hired
-                            </span>
-                            {% if app.is_conversion %}
-                            <div class="mt-2 text-right">
-                                <span
-                                    class="inline-flex items-center px-2 py-0.5 rounded text-xs font-bold bg-indigo-100 text-indigo-700 uppercase tracking-wider">
-                                    <i class="fas fa-rocket mr-1"></i>Converted to FT
-                                </span>
+                        <div class="absolute -bottom-2 -right-2 bg-white rounded-full p-1.5 shadow-sm">
+                            {% if profile.current_status == 'student' %}
+                            <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-600"
+                                title="Student">
+                                <i class="fas fa-graduation-cap text-sm"></i>
+                            </div>
+                            {% else %}
+                            <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center text-green-600"
+                                title="Professional">
+                                <i class="fas fa-briefcase text-sm"></i>
                             </div>
                             {% endif %}
-                            {% elif app.status == 'REJECTED' %}
-                            <span class="px-3 py-1 bg-red-100 text-red-700 text-sm rounded-full font-semibold">
-                                Rejected
+                        </div>
+                    </div>
+                    <div>
+                        <h1 class="text-3xl font-bold text-gray-900">{{ request.user.username }}</h1>
+                        <p class="text-gray-500 mt-1 flex items-center gap-2">
+                            <span
+                                class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800 capitalize">
+                                {{ profile.get_current_status_display }}
                             </span>
-                            {% elif app.status == 'SHORTLISTED' %}
-                            <span class="px-3 py-1 bg-blue-100 text-blue-700 text-sm rounded-full font-semibold">
-                                Shortlisted
+                            {% if profile.actively_looking %}
+                            <span
+                                class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                <span class="w-2 h-2 bg-green-500 rounded-full mr-1.5 animate-pulse"></span>
+                                Actively Looking
                             </span>
                             {% else %}
-                            <span class="px-3 py-1 bg-gray-100 text-gray-700 text-sm rounded-full font-semibold">
-                                Pending
+                            <span
+                                class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-500">
+                                Not Looking
                             </span>
                             {% endif %}
-                        </div>
+                        </p>
                     </div>
                 </div>
-                {% endfor %}
-                {% else %}
-                <div class="bg-white rounded-lg border border-gray-200 p-12 text-center">
-                    <div class="mb-4">
-                        <i class="fas fa-briefcase text-gray-300 text-5xl"></i>
-                    </div>
-                    <h3 class="text-xl font-semibold text-gray-900 mb-2">No applications yet</h3>
-                    <p class="text-gray-600 mb-6">Start your job search and apply to opportunities</p>
+                <div class="flex gap-3 w-full md:w-auto">
+                    <a href="{% url 'student_profile_edit' %}"
+                        class="flex-1 md:flex-none inline-flex justify-center items-center px-6 py-3 border border-gray-300 shadow-sm text-sm font-medium rounded-xl text-gray-700 bg-white hover:bg-gray-50 transition">
+                        <i class="fas fa-pen mr-2"></i> Edit Profile
+                    </a>
                     <a href="{% url 'job_list' %}"
-                        class="inline-block bg-primary-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-primary-700 transition">
-                        Browse Jobs
+                        class="flex-1 md:flex-none inline-flex justify-center items-center px-6 py-3 border border-transparent shadow-sm text-sm font-medium rounded-xl text-white bg-primary-600 hover:bg-primary-700 transition">
+                        <i class="fas fa-search mr-2"></i> Find Jobs
                     </a>
                 </div>
-                {% endif %}
             </div>
         </div>
+    </div>
 
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <div class="bg-white rounded-xl border border-gray-200 p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm text-gray-500">Applications Sent</p>
+                        <p class="text-2xl font-bold text-gray-900 mt-1">{{ applications_sent }}</p>
+                    </div>
+                    <div class="w-10 h-10 rounded-lg bg-primary-50 text-primary-600 flex items-center justify-center">
+                        <i class="fas fa-paper-plane"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-white rounded-xl border border-gray-200 p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm text-gray-500">Profile Views</p>
+                        <p class="text-2xl font-bold text-gray-900 mt-1">{{ profile_views_count }}</p>
+                    </div>
+                    <div class="w-10 h-10 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center">
+                        <i class="fas fa-eye"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-white rounded-xl border border-gray-200 p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm text-gray-500">Saved Jobs</p>
+                        <p class="text-2xl font-bold text-gray-900 mt-1">{{ saved_jobs_count }}</p>
+                    </div>
+                    <div class="w-10 h-10 rounded-lg bg-gray-100 text-gray-700 flex items-center justify-center">
+                        <i class="fas fa-bookmark"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-white rounded-xl border border-gray-200 p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm text-gray-500">Interview Invites</p>
+                        <p class="text-2xl font-bold text-gray-900 mt-1">{{ invites_count }}</p>
+                    </div>
+                    <div class="w-10 h-10 rounded-lg bg-purple-50 text-purple-600 flex items-center justify-center">
+                        <i class="fas fa-comments"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Alerts Section -->
+        {% if not profile.actively_looking or not profile.resume_url %}
+        <div class="mb-8 bg-white border border-yellow-200 rounded-xl p-6 shadow-sm relative overflow-hidden">
+            <div class="absolute top-0 left-0 w-1 h-full bg-yellow-400"></div>
+            <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                <div class="flex gap-4">
+                    <div
+                        class="w-10 h-10 bg-yellow-100 rounded-full flex items-center justify-center text-yellow-600 flex-shrink-0">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-semibold text-gray-900">Profile Optimization Required</h3>
+                        <p class="text-gray-600 mt-1">
+                            {% if not profile.actively_looking and not profile.resume_url %}
+                            Enable "Actively Looking" and upload your resume to be visible to recruiters.
+                            {% elif not profile.actively_looking %}
+                            Enable "Actively Looking" to appear in recruiter searches.
+                            {% elif not profile.resume_url %}
+                            Upload your resume to apply for jobs and get matched.
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+                <a href="{% url 'student_profile_edit' %}"
+                    class="text-yellow-700 font-semibold hover:text-yellow-800 flex items-center whitespace-nowrap">
+                    Fix Now <i class="fas fa-arrow-right ml-2"></i>
+                </a>
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Left Column: Profile Details -->
+            <div class="lg:col-span-1 space-y-6">
+                <!-- About Card -->
+                <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+                    <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50">
+                        <h3 class="font-semibold text-gray-900">About</h3>
+                    </div>
+                    <div class="p-6 space-y-4">
+                        <div class="flex items-start gap-3">
+                            <div
+                                class="w-8 h-8 rounded-lg bg-indigo-50 flex items-center justify-center text-indigo-600 flex-shrink-0">
+                                <i class="fas fa-layer-group text-xs"></i>
+                            </div>
+                            <div>
+                                <p class="text-xs text-gray-500 uppercase font-semibold tracking-wide">Level</p>
+                                <p class="text-gray-900 font-medium">
+                                    {{ profile.get_experience_level_display }}
+                                </p>
+                            </div>
+                        </div>
+
+                        {% if profile.education %}
+                        <div class="flex items-start gap-3">
+                            <div
+                                class="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center text-blue-600 flex-shrink-0">
+                                <i class="fas fa-graduation-cap text-xs"></i>
+                            </div>
+                            <div>
+                                <p class="text-xs text-gray-500 uppercase font-semibold tracking-wide">Education</p>
+                                <p class="text-gray-900 font-medium">{{ profile.education }}</p>
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        <div class="flex items-start gap-3">
+                            <div
+                                class="w-8 h-8 rounded-lg bg-purple-50 flex items-center justify-center text-purple-600 flex-shrink-0">
+                                <i class="fas fa-clock text-xs"></i>
+                            </div>
+                            <div>
+                                <p class="text-xs text-gray-500 uppercase font-semibold tracking-wide">Availability</p>
+                                <p class="text-gray-900 font-medium">{{ profile.weekly_hours }}h/week</p>
+                                <p class="text-sm text-gray-500">{{ profile.get_availability_display }}</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start gap-3">
+                            <div
+                                class="w-8 h-8 rounded-lg bg-pink-50 flex items-center justify-center text-pink-600 flex-shrink-0">
+                                <i class="fas fa-map-marker-alt text-xs"></i>
+                            </div>
+                            <div>
+                                <p class="text-xs text-gray-500 uppercase font-semibold tracking-wide">Work Mode</p>
+                                <p class="text-gray-900 font-medium">{{ profile.get_work_mode_display }}</p>
+                            </div>
+                        </div>
+
+                        {% if profile.start_date %}
+                        <div class="flex items-start gap-3">
+                            <div
+                                class="w-8 h-8 rounded-lg bg-green-50 flex items-center justify-center text-green-600 flex-shrink-0">
+                                <i class="fas fa-calendar-alt text-xs"></i>
+                            </div>
+                            <div>
+                                <p class="text-xs text-gray-500 uppercase font-semibold tracking-wide">Start Date</p>
+                                <p class="text-gray-900 font-medium">{{ profile.start_date|date:"M d, Y" }}</p>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Skills Card -->
+                <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+                    <div class="px-6 py-4 border-b border-gray-100 bg-gray-50">
+                        <h3 class="font-semibold text-gray-900">Skills</h3>
+                    </div>
+                    <div class="p-6">
+                        {% if profile.skills %}
+                        <div class="flex flex-wrap gap-2">
+                            {% for skill in profile.skills|split:","|slice:":10" %}
+                            <span
+                                class="inline-flex items-center px-3 py-1 rounded-lg text-sm font-medium bg-gray-100 text-gray-800 border border-gray-200">
+                                {{ skill }}
+                            </span>
+                            {% endfor %}
+                        </div>
+                        {% else %}
+                        <p class="text-gray-500 text-sm italic">No skills listed yet.</p>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Links Card -->
+                <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+                    <div class="px-6 py-4 border-b border-gray-100 bg-gray-50">
+                        <h3 class="font-semibold text-gray-900">Links</h3>
+                    </div>
+                    <div class="p-6 space-y-3">
+                        {% if profile.resume_url %}
+                        <a href="{{ profile.resume_url }}" target="_blank"
+                            class="flex items-center justify-between p-3 rounded-lg border border-gray-200 hover:border-primary-300 hover:bg-primary-50 transition group">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 rounded bg-red-50 text-red-600 flex items-center justify-center">
+                                    <i class="fas fa-file-pdf"></i>
+                                </div>
+                                <span class="text-gray-700 font-medium group-hover:text-primary-700">Resume</span>
+                            </div>
+                            <i class="fas fa-external-link-alt text-gray-400 text-sm group-hover:text-primary-500"></i>
+                        </a>
+                        {% endif %}
+
+                        {% if profile.portfolio_url %}
+                        <a href="{{ profile.portfolio_url }}" target="_blank"
+                            class="flex items-center justify-between p-3 rounded-lg border border-gray-200 hover:border-primary-300 hover:bg-primary-50 transition group">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 rounded bg-gray-100 text-gray-800 flex items-center justify-center">
+                                    <i class="fas fa-globe"></i>
+                                </div>
+                                <span class="text-gray-700 font-medium group-hover:text-primary-700">Portfolio</span>
+                            </div>
+                            <i class="fas fa-external-link-alt text-gray-400 text-sm group-hover:text-primary-500"></i>
+                        </a>
+                        {% endif %}
+
+                        {% if not profile.resume_url and not profile.portfolio_url %}
+                        <p class="text-gray-500 text-sm italic">No links added.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Main Content -->
+            <div class="lg:col-span-1 space-y-8">
+
+                <!-- Recommended Jobs -->
+                {% if recommended_jobs %}
+                <div>
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-xl font-bold text-gray-900 flex items-center gap-2">
+                            <i class="fas fa-sparkles text-yellow-500"></i> Recommended for You
+                        </h2>
+                        <a href="{% url 'job_list' %}"
+                            class="text-primary-600 text-sm font-semibold hover:text-primary-700">View All</a>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {% for job in recommended_jobs %}
+                        <div
+                            class="bg-white rounded-xl border border-gray-200 p-5 hover:shadow-md transition hover:border-primary-200 group relative overflow-hidden">
+                            <div
+                                class="absolute top-0 right-0 bg-gradient-to-l from-primary-600 to-primary-500 text-white text-[10px] font-bold px-3 py-1 rounded-bl-lg uppercase tracking-wide">
+                                {{ job.match_score|default:"High" }} Match
+                            </div>
+                            <div class="mb-3">
+                                <h4
+                                    class="font-bold text-lg text-gray-900 group-hover:text-primary-600 transition truncate">
+                                    {{ job.title }}</h4>
+                                <p class="text-sm text-gray-500">{{ job.startup.company_name }}</p>
+                            </div>
+                            <div class="flex flex-wrap gap-2 mb-4">
+                                <span class="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded font-medium">{{
+                                    job.get_job_type_display }}</span>
+                                {% if job.salary_range %}
+                                <span class="px-2 py-1 bg-green-50 text-green-700 text-xs rounded font-medium">{{
+                                    job.salary_range }}</span>
+                                {% endif %}
+                            </div>
+                            <a href="{% url 'job_detail' job.id %}"
+                                class="block w-full text-center py-2 rounded-lg border border-primary-100 text-primary-600 font-semibold hover:bg-primary-50 transition">
+                                View Details
+                            </a>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Applications -->
+                <div id="applications">
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-xl font-bold text-gray-900">Recent Applications</h2>
+                        <span class="bg-gray-100 text-gray-600 text-xs font-bold px-2 py-1 rounded-full">{{
+                            applications.count }}</span>
+                    </div>
+
+                    {% if applications %}
+                    <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+                        <div class="divide-y divide-gray-100">
+                            {% for app in applications %}
+                            <div
+                                class="p-5 hover:bg-gray-50 transition flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                                <div>
+                                    <h3 class="text-base font-semibold text-gray-900">
+                                        <a href="{% url 'job_detail' app.job.id %}"
+                                            class="hover:text-primary-600 hover:underline">
+                                            {{ app.job.title }}
+                                        </a>
+                                    </h3>
+                                    <div class="flex items-center gap-2 text-sm text-gray-500 mt-1">
+                                        <span class="font-medium text-gray-700">{{ app.job.startup.company_name
+                                            }}</span>
+                                        <span>•</span>
+                                        <span>Applied {{ app.applied_at|date:"M d" }}</span>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-3">
+                                    {% if app.status == 'HIRED' %}
+                                    <span
+                                        class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                        <span class="w-1.5 h-1.5 bg-green-500 rounded-full mr-1.5"></span> Hired
+                                    </span>
+                                    {% elif app.status == 'REJECTED' %}
+                                    <span
+                                        class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                        <span class="w-1.5 h-1.5 bg-red-500 rounded-full mr-1.5"></span> Rejected
+                                    </span>
+                                    {% elif app.status == 'SHORTLISTED' %}
+                                    <span
+                                        class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                        <span class="w-1.5 h-1.5 bg-blue-500 rounded-full mr-1.5"></span> Shortlisted
+                                    </span>
+                                    {% elif app.status == 'INTERVIEW' %}
+                                    <span
+                                        class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                                        <span class="w-1.5 h-1.5 bg-purple-500 rounded-full mr-1.5"></span> Interview
+                                    </span>
+                                    {% else %}
+                                    <span
+                                        class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                        <span class="w-1.5 h-1.5 bg-gray-400 rounded-full mr-1.5"></span> Applied
+                                    </span>
+                                    {% endif %}
+
+                                    {% if app.is_conversion %}
+                                    <span
+                                        class="inline-flex items-center px-2 py-1 rounded text-xs font-bold bg-indigo-100 text-indigo-700 uppercase tracking-wide"
+                                        title="Converted to Full Time">
+                                        <i class="fas fa-rocket mr-1"></i> FT
+                                    </span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        <div class="bg-gray-50 px-6 py-3 border-t border-gray-200 text-center">
+                            <a href="{% url 'job_list' %}"
+                                class="text-sm font-medium text-primary-600 hover:text-primary-700">Find More Jobs</a>
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="bg-white rounded-xl border border-gray-200 p-8 text-center">
+                        <div
+                            class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center text-gray-400 mx-auto mb-4">
+                            <i class="fas fa-paper-plane text-2xl"></i>
+                        </div>
+                        <h3 class="text-lg font-medium text-gray-900">No applications yet</h3>
+                        <p class="text-gray-500 mt-1 mb-6">Start applying to jobs to see them here.</p>
+                        <a href="{% url 'job_list' %}"
+                            class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg shadow-sm text-white bg-primary-600 hover:bg-primary-700">
+                            Browse Jobs
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="space-y-6">
+                <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+                    <div class="px-6 py-4 border-b border-gray-100 bg-gray-50">
+                        <h3 class="font-semibold text-gray-900">Profile Completion</h3>
+                    </div>
+                    <div class="p-6 space-y-3">
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-700 font-medium">{{ profile_completion_pct }}%
+                                Complete</span>
+                            <span class="text-sm text-gray-500">
+                                {{ profile_completion_done }}/{{ profile_completion_total }} fields
+                            </span>
+
+                        </div>
+                        <div class="w-full bg-gray-100 rounded-full h-2.5">
+                            <div class="bg-primary-600 h-2.5 rounded-full" style="width: {{ profile_completion_pct }}%">
+                            </div>
+                        </div>
+                        <a href="{% url 'student_profile_edit' %}"
+                            class="mt-2 inline-flex items-center px-4 py-2 rounded-lg border border-primary-600 text-primary-600 font-semibold hover:bg-primary-50 transition">
+                            Complete Profile
+                        </a>
+                    </div>
+                </div>
+                <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+                    <div class="px-6 py-4 border-b border-gray-100 bg-gray-50">
+                        <h3 class="font-semibold text-gray-900">Quick Actions</h3>
+                    </div>
+                    <div class="p-6 space-y-3">
+                        <a href="{% url 'job_list' %}"
+                            class="flex items-center justify-between p-3 rounded-lg border border-gray-200 hover:border-primary-300 hover:bg-primary-50 transition">
+                            <span class="text-gray-700 font-medium">Browse Jobs</span>
+                            <i class="fas fa-arrow-right text-gray-400"></i>
+                        </a>
+                        <a href="{% url 'job_list' %}?type=internship"
+                            class="flex items-center justify-between p-3 rounded-lg border border-gray-200 hover:border-primary-300 hover:bg-primary-50 transition">
+                            <span class="text-gray-700 font-medium">Explore Internships</span>
+                            <i class="fas fa-arrow-right text-gray-400"></i>
+                        </a>
+                        <a href="{% url 'job_list' %}?type=job"
+                            class="flex items-center justify-between p-3 rounded-lg border border-gray-200 hover:border-primary-300 hover:bg-primary-50 transition">
+                            <span class="text-gray-700 font-medium">Explore Jobs</span>
+                            <i class="fas fa-arrow-right text-gray-400"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 {% endblock %}

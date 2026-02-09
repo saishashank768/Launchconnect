@@ -42,10 +42,11 @@
     <h2 class="text-3xl font-semibold text-center mb-3">Choose Your Path</h2>
     <p class="text-center text-gray-600 mb-8">Whether you're a student looking for opportunities or a founder building your dream team, we've got you covered.</p>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <div class="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <!-- Student Card -->
+        <div class="bg-white rounded-lg border border-gray-200 p-6 shadow-sm flex flex-col h-full">
             <div class="flex items-start gap-4 mb-4">
-                <div class="w-12 h-12 bg-indigo-50 rounded-lg flex items-center justify-center text-indigo-600">
+                <div class="w-12 h-12 bg-indigo-50 rounded-lg flex items-center justify-center text-indigo-600 shrink-0">
                     <i class="fas fa-graduation-cap"></i>
                 </div>
                 <div>
@@ -53,35 +54,58 @@
                     <p class="text-gray-600">Find your perfect internship or job opportunity</p>
                 </div>
             </div>
-            <ul class="mt-4 space-y-2 text-gray-600">
+            <ul class="mt-4 space-y-2 text-gray-600 flex-grow">
                 <li>✅ Browse verified job listings</li>
                 <li>✅ Track applications in real-time</li>
                 <li>✅ Build your professional profile</li>
                 <li>✅ Get matched with opportunities</li>
             </ul>
             <div class="mt-6">
-                <a href="{% url 'register' %}?role=student" class="bg-primary-600 text-white px-4 py-3 rounded-lg font-semibold">Sign Up as Student</a>
+                <a href="{% url 'register' %}?role=student" class="block w-full text-center bg-primary-600 text-white px-4 py-3 rounded-lg font-semibold hover:bg-primary-700 transition">Sign Up as Student</a>
             </div>
         </div>
 
-        <div class="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
+        <!-- Startup Card -->
+        <div class="bg-white rounded-lg border border-gray-200 p-6 shadow-sm flex flex-col h-full">
             <div class="flex items-start gap-4 mb-4">
-                <div class="w-12 h-12 bg-indigo-50 rounded-lg flex items-center justify-center text-indigo-600">
+                <div class="w-12 h-12 bg-indigo-50 rounded-lg flex items-center justify-center text-indigo-600 shrink-0">
+                    <i class="fas fa-building"></i>
+                </div>
+                <div>
+                    <h3 class="text-xl font-semibold">For Startups</h3>
+                    <p class="text-gray-600">Hire top talent and build your dream team</p>
+                </div>
+            </div>
+            <ul class="mt-4 space-y-2 text-gray-600 flex-grow">
+                <li>✅ Post unlimited job listings</li>
+                <li>✅ Manage applicants efficiently</li>
+                <li>✅ Company verification badge</li>
+                <li>✅ Analytics and insights</li>
+            </ul>
+            <div class="mt-6">
+                <a href="{% url 'register' %}?role=startup" class="block w-full text-center bg-primary-600 text-white px-4 py-3 rounded-lg font-semibold hover:bg-primary-700 transition">Sign Up as Startup</a>
+            </div>
+        </div>
+
+        <!-- Founder Card -->
+        <div class="bg-white rounded-lg border border-gray-200 p-6 shadow-sm flex flex-col h-full">
+            <div class="flex items-start gap-4 mb-4">
+                <div class="w-12 h-12 bg-indigo-50 rounded-lg flex items-center justify-center text-indigo-600 shrink-0">
                     <i class="fas fa-rocket"></i>
                 </div>
                 <div>
                     <h3 class="text-xl font-semibold">For Founders</h3>
-                    <p class="text-gray-600">Hire talent and collaborate with fellow founders</p>
+                    <p class="text-gray-600">Collaborate and network with fellow founders</p>
                 </div>
             </div>
-            <ul class="mt-4 space-y-2 text-gray-600">
-                <li>✅ Post jobs and manage applicants</li>
-                <li>✅ Auto-verification via email domain</li>
+            <ul class="mt-4 space-y-2 text-gray-600 flex-grow">
                 <li>✅ Access private founder network</li>
-                <li>✅ Weekly collaboration opportunities</li>
+                <li>✅ Weekly collaboration matches</li>
+                <li>✅ Share resources and advice</li>
+                <li>✅ Peer mentorship</li>
             </ul>
             <div class="mt-6">
-                <a href="{% url 'register' %}?role=founder" class="bg-primary-600 text-white px-4 py-3 rounded-lg font-semibold">Sign Up as Founder</a>
+                <a href="{% url 'register' %}?role=founder" class="block w-full text-center bg-primary-600 text-white px-4 py-3 rounded-lg font-semibold hover:bg-primary-700 transition">Sign Up as Founder</a>
             </div>
         </div>
     </div>

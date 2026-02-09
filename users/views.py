@@ -6,6 +6,8 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.core.mail import send_mail, EmailMessage
 from django.conf import settings
+from django.http import JsonResponse
+from django.urls import reverse
 from .forms import CustomUserCreationForm
 from .models import User
 import uuid
@@ -135,19 +137,43 @@ def register(request):
             # Send verification email
             try:
                 send_verification_email(user, request)
+                
+                if request.headers.get('X-Requested-With') == 'XMLHttpRequest' or request.headers.get('Accept') == 'application/json':
+                    return JsonResponse({
+                        'success': True,
+                        'redirect_url': reverse('verification_pending', kwargs={'username': user.username}),
+                        'message': 'Registration successful! Please check your email to verify your account.'
+                    })
+                    
                 messages.success(request, 'Registration successful! Please check your email to verify your account.')
                 return redirect('verification_pending', username=user.username)
             except Exception as e:
+                if request.headers.get('X-Requested-With') == 'XMLHttpRequest' or request.headers.get('Accept') == 'application/json':
+                    user.delete()
+                    return JsonResponse({
+                        'success': False,
+                        'errors': {'__all__': ['Error sending verification email. Please try again.']}
+                    })
+                
                 messages.error(request, 'Error sending verification email. Please try again.')
                 user.delete()
                 return redirect('register')
+        else:
+            if request.headers.get('X-Requested-With') == 'XMLHttpRequest' or request.headers.get('Accept') == 'application/json':
+                return JsonResponse({
+                    'success': False,
+                    'errors': form.errors
+                })
     else:
         role = request.GET.get('role')
         initial_data = {}
         if role:
             initial_data['role'] = role
         form = CustomUserCreationForm(initial=initial_data)
-    return render(request, 'users/register.html', {'form': form})
+    
+    # Pass role explicitly for template conditional logic
+    role_param = request.GET.get('role')
+    return render(request, 'users/register.html', {'form': form, 'role_param': role_param})
 
 def verify_email(request, token):
     """Verify user email with token"""

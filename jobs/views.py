@@ -39,6 +39,11 @@ def job_list(request):
                 pattern |= Q(description__icontains=skill) | Q(title__icontains=skill)
             recommended_jobs = Job.objects.filter(pattern, status='OPEN').exclude(id__in=jobs).distinct()[:3]
 
+    # Determine base template
+    base_template = 'base.html'
+    if request.user.is_authenticated and request.user.is_student():
+        base_template = 'students/base_student.html'
+
     context = {
         "jobs": jobs,
         "search_query": q,
@@ -46,6 +51,7 @@ def job_list(request):
         "is_internship": job_type == "internship",
         "is_job": job_type == "job",
         "recommended_jobs": recommended_jobs,
+        "base_template": base_template,
     }
 
     return render(request, "jobs/job_list.html", context)
@@ -65,9 +71,15 @@ def job_detail(request, pk):
         except StudentProfile.DoesNotExist:
             pass
 
+    # Determine base template
+    base_template = 'base.html'
+    if request.user.is_authenticated and request.user.is_student():
+        base_template = 'students/base_student.html'
+
     context = {
         "job": job,
         "has_applied": has_applied,
+        "base_template": base_template,
     }
 
     return render(request, "jobs/job_detail.html", context)
