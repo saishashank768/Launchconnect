@@ -12,7 +12,7 @@
     </div>
 
     <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <form method="post" class="space-y-8">
+        <form method="post" enctype="multipart/form-data" class="space-y-8">
             {% csrf_token %}
 
             {% if form.errors %}
@@ -27,6 +27,44 @@
                 </ul>
             </div>
             {% endif %}
+            <!-- Profile Photo -->
+            <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden p-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Profile Photo</h3>
+
+                <div class="flex items-center gap-6">
+                    <!-- Preview -->
+                    <div class="w-24 h-24 rounded-xl overflow-hidden border border-gray-200 bg-gray-100 flex items-center justify-center">
+                        {% if form.instance.photo %}
+                            <img
+                                src="{{ form.instance.photo.url }}"
+                                alt="Profile Photo"
+                                class="w-full h-full object-cover"
+                            >
+                        {% else %}
+                            <span class="text-gray-400 text-sm">No Photo</span>
+                        {% endif %}
+                    </div>
+
+                    <!-- Upload -->
+                    <div>
+                        <input
+                            type="file"
+                            name="photo"
+                            accept="image/*"
+                            class="block w-full text-sm text-gray-700
+                                file:mr-4 file:py-2 file:px-4
+                                file:rounded-lg file:border-0
+                                file:text-sm file:font-semibold
+                                file:bg-primary-50 file:text-primary-700
+                                hover:file:bg-primary-100"
+                        />
+
+                        <p class="text-xs text-gray-500 mt-2">
+                            JPG / PNG • Max 2MB • Square image recommended
+                        </p>
+                    </div>
+                </div>
+            </div>
 
             <!-- Actively Looking Toggle -->
             <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden p-6">

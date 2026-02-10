@@ -150,3 +150,5 @@ SITE_URL = os.environ.get('SITE_URL', 'http://localhost:8000')
 # Login URL
 LOGIN_URL = 'login'
 LOGOUT_REDIRECT_URL = 'login'
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'

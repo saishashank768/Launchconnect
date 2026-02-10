@@ -91,7 +91,12 @@ def dashboard(request):
 def profile_edit(request):
     profile, created = StudentProfile.objects.get_or_create(user=request.user)
     if request.method == 'POST':
-        form = StudentProfileForm(request.POST, instance=profile)
+        form = StudentProfileForm(
+            request.POST,
+            request.FILES,   # 👈 REQUIRED
+            instance=profile
+        )
+
         if form.is_valid():
             form.save()
             return redirect('student_dashboard')

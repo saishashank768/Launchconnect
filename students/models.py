@@ -3,6 +3,12 @@ from django.conf import settings
 
 class StudentProfile(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='student_profile')
+    photo = models.ImageField(
+    upload_to='profile_photos/',
+    blank=True,
+    null=True
+    )
+
     resume_url = models.URLField(blank=True, null=True)
     skills = models.TextField(help_text="Comma-separated list of skills")
     education = models.CharField(max_length=255, blank=True, help_text="University/Degree (Optional for non-students)")
