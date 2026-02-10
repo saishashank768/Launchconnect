@@ -90,16 +90,29 @@ def dashboard(request):
 @student_required
 def profile_edit(request):
     profile, created = StudentProfile.objects.get_or_create(user=request.user)
+
     if request.method == 'POST':
+        old_photo = profile.photo  # 👈 capture BEFORE form binds
+
         form = StudentProfileForm(
             request.POST,
-            request.FILES,   # 👈 REQUIRED
+            request.FILES,
             instance=profile
         )
 
         if form.is_valid():
-            form.save()
+            new_profile = form.save()  # ✅ SAVE FIRST
+
+            # ✅ Delete old photo ONLY if a new one was saved
+            if (
+                'photo' in request.FILES
+                and old_photo
+                and old_photo != new_profile.photo
+            ):
+                old_photo.delete(save=False)
+
             return redirect('student_dashboard')
     else:
         form = StudentProfileForm(instance=profile)
+
     return render(request, 'students/student_profile_edit.html', {'form': form})
